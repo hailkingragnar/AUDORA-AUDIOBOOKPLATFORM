@@ -17,38 +17,59 @@
 <div class="bg-white/30 backdrop-blur-md p-8 rounded-3xl shadow-2xl w-full max-w-md text-gray-800">
     <h2 class="text-2xl font-bold text-center mb-6">Register for AudioBook</h2>
 
-    <form th:action="@{/register}" th:object="${user}" method="POST" class="space-y-5">
+    <form th:action="@{/register}" th:object="${user}" enctype="multipart/form-data" method="POST" class="space-y-5">
+        <!-- Full Name Field -->
         <div>
-            <label  class="block mb-1 text-sm font-semibold">Full Name</label>
+            <label class="block mb-1 text-sm font-semibold">Full Name</label>
             <input
                     type="text"
                     th:field="*{name}"
                     placeholder="Your full name"
                     required
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             />
         </div>
 
+        <!-- Email Field -->
         <div>
-            <label  class="block mb-1 text-sm font-semibold">Email</label>
+            <label class="block mb-1 text-sm font-semibold">Email</label>
             <input
                     type="email"
                     th:field="*{email}"
                     placeholder="you@example.com"
                     required
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             />
         </div>
 
+        <!-- Password Field -->
         <div>
-            <label  class="block mb-1 text-sm font-semibold">Password</label>
+            <label class="block mb-1 text-sm font-semibold">Password</label>
             <input
                     type="password"
                     th:field="*{password}"
                     placeholder="Create a password"
                     required
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             />
+        </div>
+
+        <!-- Profile Picture Field with Live Preview -->
+        <div>
+            <label class="block mb-1 text-sm font-semibold">Profile Picture (Optional)</label>
+            <input
+                    type="file"
+                    th:field="*{profilePicture}"
+                    accept="image/*"
+                    id="profilePicInput"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    onchange="previewImage(event)"
+            />
+            <!-- Live Image Preview -->
+            <div class="mt-4" id="imagePreviewContainer">
+                <img id="profilePicPreview" src="" alt="Profile Picture Preview" class="w-32 h-32 object-cover rounded-full hidden" />
+                <button type="button" id="removeImageButton" class="mt-2 text-red-500 font-semibold text-sm hidden" onclick="removeImage()">Remove Image</button>
+            </div>
         </div>
 
         <button
@@ -64,7 +85,6 @@
         <a href="/login" class="text-green-100 hover:underline">Login</a>
     </p>
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -93,8 +113,39 @@
         });
     }
     /*]]>*/
-</script>
 
+    // Live image preview function
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            const preview = document.getElementById('profilePicPreview');
+            const removeButton = document.getElementById('removeImageButton');
+            preview.src = reader.result;
+            preview.classList.remove('hidden');  // Show the image preview
+            removeButton.classList.remove('hidden'); // Show the remove button
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Function to remove the uploaded image
+    function removeImage() {
+        const preview = document.getElementById('profilePicPreview');
+        const inputFile = document.getElementById('profilePicInput');
+        const removeButton = document.getElementById('removeImageButton');
+
+        // Clear the file input
+        inputFile.value = '';
+
+        // Hide the preview and remove button
+        preview.classList.add('hidden');
+        removeButton.classList.add('hidden');
+    }
+</script>
 
 </body>
 </html>

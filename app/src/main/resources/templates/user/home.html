@@ -10,18 +10,37 @@
 
 <!-- Navbar -->
 <nav class="bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 class="text-2xl font-extrabold text-indigo-600">📘 AudioBook</h1>
-        <div class="space-x-6">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center" th:object="${users}">
+        <h1 class="text-2xl font-extrabold text-indigo-600">📘 AUDORA</h1>
+        <div class="space-x-6 flex items-center">
             <a href="#" class="text-gray-700 hover:text-indigo-600 transition">Home</a>
             <a href="#" class="text-gray-700 hover:text-indigo-600 transition">My Library</a>
-            <a th:href="@{/logout}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Logout</a>
+
+            <!-- User Profile Dropdown -->
+            <div class="relative">
+                <!-- Profile Picture -->
+                <img th:src="@{'/Images/profilepicture/'+ ${users.profilePicture}}" alt="Profile Picture" class="w-10 h-10 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-indigo-600 transition"
+                     id="profileDropdownButton">
+
+                <!-- Dropdown Menu -->
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-300"
+                     id="profileDropdownMenu">
+                    <ul class="text-gray-700">
+                        <li class="px-4 py-2 hover:bg-indigo-100"><a th:href="@{/user/profile}">Profile Settings</a></li>
+                        <li class="px-4 py-2 hover:bg-indigo-100"><a href="#">Subscriptions</a></li>
+                        <li class="px-4 py-2 hover:bg-indigo-100"><a href="/logout" class="text-red-500">Logout</a></li>
+                        <li class="px-4 py-2 hover:bg-indigo-100"><a href="#">About</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </nav>
 
 <!-- Hero Section -->
 <header class="text-center py-16 px-6">
+    <!-- Just display the imagePath to verify it's being passed -->
+
     <h2 class="text-4xl md:text-5xl font-bold text-indigo-700 leading-tight">Dive Into the World of Stories</h2>
     <p class="mt-4 text-gray-600 text-lg max-w-2xl mx-auto">Listen to captivating audiobooks anytime, anywhere. Start your journey now!</p>
     <a href="#" class="mt-6 inline-block bg-indigo-600 text-white px-6 py-3 rounded-full shadow hover:bg-indigo-700 transition">Explore Library</a>
@@ -29,9 +48,9 @@
 
 <!-- Popular Audiobooks -->
 <section class="px-6 py-12 bg-white rounded-t-3xl shadow-inner">
-    <h3 class="text-3xl font-bold text-center text-gray-800 mb-10">📚 Popular Audiobooks</h3>
+    <h3  class="text-3xl font-bold text-center text-gray-800 mb-10">📚 Popular Audiobooks</h3>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+    <div  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
         <!-- Book Card -->
         <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300">
             <img src="assets/img/sample-book.jpg" alt="Book Cover" class="w-full h-56 object-cover">
@@ -60,6 +79,15 @@
 <footer class="mt-16 text-center text-sm text-gray-500 py-6">
     &copy; 2025 AudioBook. All rights reserved.
 </footer>
+
+<script>
+    // JavaScript for handling the hover functionality for profile menu
+    document.getElementById('profileDropdownButton').addEventListener('click', function () {
+        const menu = document.getElementById('profileDropdownMenu');
+        menu.classList.toggle('opacity-100');
+        menu.classList.toggle('invisible');
+    });
+</script>
 
 </body>
 </html>

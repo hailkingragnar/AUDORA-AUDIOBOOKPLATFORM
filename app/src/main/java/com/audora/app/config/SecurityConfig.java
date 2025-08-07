@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .formLogin(formLogin ->
                         formLogin.loginPage("/login")
                                 .failureUrl("/login?error=true"))
-                .httpBasic(Customizer.withDefaults())
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

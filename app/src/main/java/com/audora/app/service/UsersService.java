@@ -1,9 +1,8 @@
 package com.audora.app.service;
 
 
+import com.audora.app.dto.UserLogin;
 import com.audora.app.dto.UserRegistration;
-import com.audora.app.enumpackage.RoleType;
-import com.audora.app.model.UserRoles;
 import com.audora.app.model.Users;
 import com.audora.app.repo.RolesRepo;
 import com.audora.app.repo.UsersRepo;
@@ -12,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class UsersService {
@@ -26,14 +23,22 @@ public class UsersService {
     @Autowired
     private RolesRepo rolesRepo;
 
+    public String ImagePath(UserLogin user) {
+        Users user1 = usersRepo.findByEmail(user.getUserEmail()).get();
+        return user1.getProfilePicture();
+
+    }
+
     @Transactional
-    public boolean registerUser(UserRegistration users) {
+    public boolean registerUser(UserRegistration users, String fileName) {
 
        try {
            Users users1 = new Users();
            users1.setEmail(users.getEmail());
            users1.setName(users.getName());
            users1.setPassword(passwordEncoder.encode(users.getPassword()));
+           users1.setProfilePicture(fileName);
+
 
 //           Set<UserRoles> userRolesSet = new HashSet<>();
 //           for(String roles : users.getRoles()){
@@ -66,4 +71,8 @@ public class UsersService {
     }
 
 
+    public Users getUser(String username ) {
+        Users user1 = usersRepo.findByEmail(username).get();
+        return user1;
+    }
 }

@@ -3,20 +3,32 @@ package com.audora.app.controller;
 
 import com.audora.app.dto.UserLogin;
 import com.audora.app.dto.UserRegistration;
+import com.audora.app.model.Users;
 import com.audora.app.service.JWTService;
 import com.audora.app.service.UsersService;
 import com.audora.app.wrapper.ApiWrapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 @Controller
 public class UserController {
@@ -27,6 +39,8 @@ public class UserController {
     @Autowired
     private JWTService jwtService;
 
+    @Value("${upload.dir}")
+    private String uploadDir;
 
 
     @GetMapping("/login")
@@ -43,9 +57,30 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public String register(@ModelAttribute("user") UserRegistration users , RedirectAttributes redirectAttributes){
+    public String register(@ModelAttribute("user") UserRegistration users , RedirectAttributes redirectAttributes, @RequestParam("profilePicture")MultipartFile file){
 
-        boolean status = usersService.registerUser(users);
+        File dir = new File(uploadDir);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        String fileName = file.getOriginalFilename();
+
+        //Sanitize
+        fileName = fileName.replaceAll("[^a-zA-Z0-9.-]", "_");
+
+        // Set the file path to save
+        String filePath = uploadDir + File.separator + fileName;
+
+        Path targetLocation = Path.of(filePath);
+
+        try {
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        boolean status = usersService.registerUser(users,fileName);
         if (status) {
             redirectAttributes.addFlashAttribute("success", "Registration successful!");
             return "redirect:/login";
@@ -64,7 +99,7 @@ public class UserController {
 
 
     @RequestMapping("api/v1/authenticate")
-    public String login(@ModelAttribute UserLogin user, HttpServletResponse httpServletResponse, RedirectAttributes redirectAttributes) {
+    public String login(@ModelAttribute UserLogin user, HttpSession session, HttpServletResponse httpServletResponse, RedirectAttributes redirectAttributes, Model model) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserEmail(), user.getUserPassword()));
 
         if (authentication.isAuthenticated()) {
@@ -76,10 +111,6 @@ public class UserController {
                 cookie.setPath("/");
                 cookie.setMaxAge(60 * 30);
                 httpServletResponse.addCookie(cookie);
-
-
-
-
                 redirectAttributes.addFlashAttribute("success", "Login successful!");
                 return "redirect:/user/home";
 
@@ -107,9 +138,24 @@ public class UserController {
     }
 
     @GetMapping("/user/home")
-    public String getHomePage(){
+    public String getHomePage( Model model){
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user1 = usersService.getUser(userName);
+        System.out.println("From Home page : "+ user1);
+        model.addAttribute("users",user1);
         return "user/home";
     }
+
+    @GetMapping("/user/profile")
+    public String getProfilePage(Model model){
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user1 = usersService.getUser(userName);
+        model.addAttribute("users",user1);
+
+
+        return "user/profile";
+    }
+
 
 
 }

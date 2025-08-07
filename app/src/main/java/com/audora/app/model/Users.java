@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +21,11 @@ public class Users {
     private String name;
     private String email;
     private String password;
+    private String profilePicture;
+    private String subscription;
+    private Date membershipStartDate;
+    private Date membershipEndDate;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles_join",
