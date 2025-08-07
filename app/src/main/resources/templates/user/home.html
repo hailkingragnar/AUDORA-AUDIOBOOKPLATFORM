@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AudioBook - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-indigo-100 to-blue-100 min-h-screen font-sans">
+
+<!-- Navbar -->
+<nav class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-extrabold text-indigo-600">📘 AudioBook</h1>
+        <div class="space-x-6">
+            <a href="#" class="text-gray-700 hover:text-indigo-600 transition">Home</a>
+            <a href="#" class="text-gray-700 hover:text-indigo-600 transition">My Library</a>
+            <a th:href="@{/logout}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<header class="text-center py-16 px-6">
+    <h2 class="text-4xl md:text-5xl font-bold text-indigo-700 leading-tight">Dive Into the World of Stories</h2>
+    <p class="mt-4 text-gray-600 text-lg max-w-2xl mx-auto">Listen to captivating audiobooks anytime, anywhere. Start your journey now!</p>
+    <a href="#" class="mt-6 inline-block bg-indigo-600 text-white px-6 py-3 rounded-full shadow hover:bg-indigo-700 transition">Explore Library</a>
+</header>
+
+<!-- Popular Audiobooks -->
+<section class="px-6 py-12 bg-white rounded-t-3xl shadow-inner">
+    <h3 class="text-3xl font-bold text-center text-gray-800 mb-10">📚 Popular Audiobooks</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        <!-- Book Card -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300">
+            <img src="assets/img/sample-book.jpg" alt="Book Cover" class="w-full h-56 object-cover">
+            <div class="p-4">
+                <h4 class="text-lg font-semibold text-gray-800">The Book Title</h4>
+                <p class="text-sm text-gray-500 mb-2">Author Name</p>
+                <a href="book.html?id=1" class="text-indigo-600 font-medium hover:underline">🎧 Listen Now</a>
+            </div>
+        </div>
+
+        <!-- Duplicate this card for more books -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300">
+            <img src="assets/img/sample-book.jpg" alt="Book Cover" class="w-full h-56 object-cover">
+            <div class="p-4">
+                <h4 class="text-lg font-semibold text-gray-800">Another Book</h4>
+                <p class="text-sm text-gray-500 mb-2">Another Author</p>
+                <a href="#" class="text-indigo-600 font-medium hover:underline">🎧 Listen Now</a>
+            </div>
+        </div>
+
+        <!-- Add more cards here -->
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="mt-16 text-center text-sm text-gray-500 py-6">
+    &copy; 2025 AudioBook. All rights reserved.
+</footer>
+
+</body>
+</html>
