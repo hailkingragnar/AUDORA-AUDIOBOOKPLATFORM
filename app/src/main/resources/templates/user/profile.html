@@ -5,31 +5,256 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Profile - AUDORA</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+
+        /* Animated gradient background */
+        .animated-bg {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-sidebar {
+            background: linear-gradient(145deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+        }
+
+        /* Floating elements animation */
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 300% 300%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Profile image glow */
+        .profile-glow {
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .profile-glow:hover {
+            box-shadow: 0 0 40px rgba(102, 126, 234, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* Sparkle effect */
+        .sparkle {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sparkle:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: sparkle 3s infinite;
+        }
+
+        @keyframes sparkle {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+
+        /* Button pulse effect */
+        .pulse-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pulse-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: width 0.6s, height 0.6s;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .pulse-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .pulse-btn > span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: reveal 0.8s ease forwards;
+        }
+
+        @keyframes reveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger animation delays */
+        .reveal:nth-child(1) { animation-delay: 0.1s; }
+        .reveal:nth-child(2) { animation-delay: 0.2s; }
+        .reveal:nth-child(3) { animation-delay: 0.3s; }
+        .reveal:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Icon pulse */
+        .icon-pulse {
+            animation: iconPulse 2s infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* Navigation link hover */
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateX(10px);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            border-radius: 2px;
+            transform: translateY(-50%);
+            transition: height 0.3s ease;
+        }
+
+        .nav-link:hover::before {
+            height: 100%;
+        }
+
+        /* Info card styling */
+        .info-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-r from-indigo-100 to-blue-100 min-h-screen font-sans">
+<body class="animated-bg min-h-screen relative overflow-x-hidden">
+
+<!-- Decorative floating elements -->
+<div class="absolute top-10 left-10 text-4xl opacity-10 floating">🎧</div>
+<div class="absolute top-20 right-20 text-3xl opacity-15 floating" style="animation-delay: 1s;">📚</div>
+<div class="absolute bottom-20 left-20 text-5xl opacity-10 floating" style="animation-delay: 2s;">✨</div>
+<div class="absolute bottom-32 right-32 text-3xl opacity-20 floating" style="animation-delay: 1.5s;">🎵</div>
 
 <!-- Navbar -->
-<nav class="bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 class="text-2xl font-extrabold text-indigo-600">📘 AUDORA</h1>
-        <div class="space-x-6 flex items-center">
-            <a href="#" class="text-gray-700 hover:text-indigo-600 transition">Home</a>
-            <a href="#" class="text-gray-700 hover:text-indigo-600 transition">My Library</a>
+<nav class="glass fixed w-full top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center" th:object="${users}">
+        <h1 class="text-2xl font-extrabold text-white floating icon-pulse">📘 AUDORA</h1>
+        <div class="space-x-8 flex items-center">
+            <a href="#" class="text-white font-medium hover:text-yellow-300 transition duration-300 transform hover:scale-105">Home</a>
+            <a href="#" class="text-white font-medium hover:text-yellow-300 transition duration-300 transform hover:scale-105">My Library</a>
 
             <!-- User Profile Dropdown -->
             <div class="relative">
-                <!-- Profile Picture -->
-                <img th:src="@{'/Images/profilepicture/'+ ${users.profilePicture}}" alt="Profile Picture" class="w-10 h-10 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-indigo-600 transition"
+                <img th:src="@{'/Images/profilepicture/'+ ${users.profilePicture}}" alt="Profile Picture"
+                     class="w-12 h-12 rounded-full object-cover cursor-pointer hover:ring-4 hover:ring-purple-400 transition-all duration-300 profile-glow"
                      id="profileDropdownButton">
 
-                <!-- Dropdown Menu -->
-                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-300"
+                <div class="absolute right-0 mt-3 w-52 glass-card rounded-2xl shadow-2xl opacity-0 invisible transition-all duration-300 transform scale-95"
                      id="profileDropdownMenu">
-                    <ul class="text-gray-700">
-                        <li class="px-4 py-2 hover:bg-indigo-100"><a th:href="@{/user/profile}">Profile Settings</a></li>
-                        <li class="px-4 py-2 hover:bg-indigo-100"><a href="#">Subscriptions</a></li>
-                        <li class="px-4 py-2 hover:bg-indigo-100"><a href="/logout" class="text-red-500">Logout</a></li>
-                        <li class="px-4 py-2 hover:bg-indigo-100"><a href="#">About</a></li>
+                    <ul class="text-white py-2">
+                        <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 transition-all duration-300 rounded-xl mx-2">
+                            <a th:href="@{/user/profile}" class="flex items-center space-x-2">
+                                <span>👤</span><span>Profile Settings</span>
+                            </a>
+                        </li>
+                        <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 transition-all duration-300 rounded-xl mx-2">
+                            <a href="#" class="flex items-center space-x-2">
+                                <span>⭐</span><span>Subscriptions</span>
+                            </a>
+                        </li>
+                        <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-red-100/20 hover:to-pink-100/20 transition-all duration-300 rounded-xl mx-2">
+                            <a href="/logout" class="text-red-300 flex items-center space-x-2">
+                                <span>🚪</span><span>Logout</span>
+                            </a>
+                        </li>
+                        <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 transition-all duration-300 rounded-xl mx-2">
+                            <a href="#" class="flex items-center space-x-2">
+                                <span>ℹ️</span><span>About</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -38,79 +263,143 @@
 </nav>
 
 <!-- Main container -->
-<div class="flex min-h-screen">
+<div class="flex min-h-screen pt-16">
 
     <!-- Sidebar -->
-    <div class="w-64 bg-indigo-700 text-white flex flex-col py-6 px-8 shadow-lg">
-        <div class="flex items-center space-x-3 mb-8">
-            <img th:src="@{'/Images/profilepicture/'+ ${users.profilePicture}}" alt="Profile Picture" class="w-16 h-16 rounded-full object-cover">
+    <div class="w-80 glass-sidebar text-white flex flex-col py-8 px-8 shadow-2xl reveal">
+        <div class="flex items-center space-x-4 mb-12 p-6 glass-card rounded-2xl sparkle">
+            <img th:src="@{'/Images/profilepicture/'+ ${users.profilePicture}}" alt="Profile Picture"
+                 class="w-20 h-20 rounded-full object-cover profile-glow">
             <div class="space-y-2">
-                <h2 class="text-xl font-semibold">Welcome,</h2>
-                <h3 th:text="${users.name}" class="text-lg font-bold"></h3>
+                <h2 class="text-xl font-light text-purple-200">Welcome,</h2>
+                <h3 th:text="${users.name}" class="text-2xl font-bold gradient-text"></h3>
             </div>
         </div>
 
-        <nav class="flex flex-col space-y-4">
-            <a href="/user/profile" class="text-white hover:text-indigo-200 transition duration-300">
-                Profile
+        <nav class="flex flex-col space-y-6">
+            <a href="/user/profile" class="nav-link text-white hover:text-yellow-300 transition duration-300 flex items-center space-x-3 text-lg font-medium">
+                <span class="text-2xl">👤</span>
+                <span>Profile</span>
             </a>
-            <a href="/user/subscription" class="text-white hover:text-indigo-200 transition duration-300">
-                Subscription
+            <a href="/user/subscription" class="nav-link text-white hover:text-yellow-300 transition duration-300 flex items-center space-x-3 text-lg font-medium">
+                <span class="text-2xl">⭐</span>
+                <span>Subscription</span>
             </a>
-            <a href="/user/about" class="text-white hover:text-indigo-200 transition duration-300">
-                About
+            <a href="/user/about" class="nav-link text-white hover:text-yellow-300 transition duration-300 flex items-center space-x-3 text-lg font-medium">
+                <span class="text-2xl">ℹ️</span>
+                <span>About</span>
             </a>
         </nav>
+
+        <!-- Bottom decoration -->
+        <div class="mt-auto pt-8 text-center">
+            <div class="text-3xl mb-4 floating">🎵</div>
+            <p class="text-sm text-purple-200 opacity-75">Your Audio Journey</p>
+        </div>
     </div>
 
     <!-- Profile Content -->
-    <div class="flex-1 bg-white p-8 overflow-auto">
-        <h1 class="text-3xl font-bold text-indigo-700 mb-6">Your Profile</h1>
+    <div class="flex-1 glass-content p-8 overflow-auto">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl font-bold text-white mb-8 reveal flex items-center space-x-3">
+                <span class="text-5xl">👤</span>
+                <span>Your Profile</span>
+            </h1>
 
-        <!-- Profile Details Section -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Profile Picture and Name -->
-                <div class="flex items-center space-x-4">
-                    <img th:src="@{'/Images/profilepicture/'+ ${users.profilePicture}}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover">
-                    <div>
-                        <h2 th:text="${users.name}" class="text-2xl font-semibold"></h2>
-                        <p th:text="${users.email}" class="text-gray-600"></p>
+            <!-- Profile Details Section -->
+            <div class="glass-card p-8 rounded-3xl shadow-2xl card-hover sparkle reveal">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    <!-- Profile Picture and Name -->
+                    <div class="lg:col-span-2 flex items-center space-x-6">
+                        <img th:src="@{'/Images/profilepicture/'+ ${users.profilePicture}}" alt="Profile Picture"
+                             class="w-32 h-32 rounded-full object-cover profile-glow">
+                        <div class="space-y-2">
+                            <h2 th:text="${users.name}" class="text-3xl font-bold text-white"></h2>
+                            <p th:text="${users.email}" class="text-lg text-purple-200"></p>
+                            <div class="flex items-center space-x-2 text-green-400">
+                                <span class="w-3 h-3 bg-green-400 rounded-full"></span>
+                                <span class="text-sm font-medium">Active Member</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Profile Button -->
+                    <div class="flex justify-end items-center">
+                        <a href="/user/edit-profile"
+                           class="pulse-btn bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 px-8 py-4 rounded-full font-bold text-lg hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                <span class="flex items-center space-x-2">
+                                    <span>✏️</span>
+                                    <span>Edit Profile</span>
+                                </span>
+                        </a>
                     </div>
                 </div>
 
-                <!-- Edit Profile Button -->
-                <div class="flex justify-end items-center">
-                    <a href="/user/edit-profile" class="text-white bg-indigo-600 hover:bg-indigo-700 px-6 py-2 rounded-full">
-                        Edit Profile
-                    </a>
-                </div>
-            </div>
+                <!-- Information Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Email -->
+                    <div class="info-card p-6 rounded-2xl reveal">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="text-2xl">📧</span>
+                            <h3 class="text-xl font-bold text-white">Email Address</h3>
+                        </div>
+                        <p th:text="${users.email}" class="text-lg text-purple-200"></p>
+                    </div>
 
-            <div class="mt-6 space-y-4">
-                <!-- Email -->
-                <div>
-                    <h3 class="text-xl font-semibold text-gray-700">Email Address</h3>
-                    <p th:text="${users.email}" class="text-lg text-gray-600"></p>
+                    <!-- Phone Number -->
+                    <div class="info-card p-6 rounded-2xl reveal">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="text-2xl">📱</span>
+                            <h3 class="text-xl font-bold text-white">Phone Number</h3>
+                        </div>
+                        <p class="text-lg text-purple-200">09876556783</p>
+                    </div>
+
+                    <!-- Subscription -->
+                    <div class="info-card p-6 rounded-2xl reveal">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="text-2xl">💎</span>
+                            <h3 class="text-xl font-bold text-white">Subscription Plan</h3>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold">Basic</span>
+                            <span class="text-purple-200">Plan</span>
+                        </div>
+                    </div>
+
+                    <!-- Membership -->
+                    <div class="info-card p-6 rounded-2xl reveal">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="text-2xl">📅</span>
+                            <h3 class="text-xl font-bold text-white">Membership</h3>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-purple-200"><span class="text-green-400 font-semibold">Started:</span> 2025/12/23</p>
+                            <p class="text-purple-200"><span class="text-orange-400 font-semibold">Expires:</span> 2027/12/13</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Phone Number -->
-                <div>
-                    <h3 class="text-xl font-semibold text-gray-700">Phone Number</h3>
-                    <p class="text-lg text-gray-600">09876556783</p>
-                </div>
-
-                <!-- Subscription -->
-                <div>
-                    <h3 class="text-xl font-semibold text-gray-700">Subscription Plan</h3>
-                    <p class="text-lg text-gray-600">Basic</p>
-                </div>
-
-                <!-- Membership Dates -->
-                <div>
-                    <h3 class="text-xl font-semibold text-gray-700">Membership</h3>
-                    <p class="text-lg text-gray-600">Started: 2025/12/23 </p>
-                    <p class="text-lg text-gray-600">Ends: 2027/12/13</p>
+                <!-- Stats Section -->
+                <div class="mt-8 p-6 glass rounded-2xl">
+                    <h3 class="text-2xl font-bold text-white mb-6 flex items-center space-x-3">
+                        <span class="text-3xl">📊</span>
+                        <span>Your Stats</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-yellow-400">42</div>
+                            <div class="text-purple-200">Books Listened</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-400">156</div>
+                            <div class="text-purple-200">Hours Enjoyed</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-400">8</div>
+                            <div class="text-purple-200">Favorite Authors</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -118,11 +407,22 @@
 </div>
 
 <script>
-    // JavaScript for handling the hover functionality for profile menu
-    document.getElementById('profileDropdownButton').addEventListener('click', function () {
+    // JavaScript for handling the profile dropdown
+    document.getElementById('profileDropdownButton').addEventListener('click', function() {
         const menu = document.getElementById('profileDropdownMenu');
         menu.classList.toggle('opacity-100');
         menu.classList.toggle('invisible');
+        menu.classList.toggle('scale-95');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('profileDropdownMenu');
+        const button = document.getElementById('profileDropdownButton');
+
+        if (!button.contains(event.target) && !menu.contains(event.target)) {
+            menu.classList.add('opacity-0', 'invisible', 'scale-95');
+        }
     });
 </script>
 

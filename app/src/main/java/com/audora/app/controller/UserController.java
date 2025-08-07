@@ -3,7 +3,10 @@ package com.audora.app.controller;
 
 import com.audora.app.dto.UserLogin;
 import com.audora.app.dto.UserRegistration;
+import com.audora.app.model.Books;
+import com.audora.app.model.Categories;
 import com.audora.app.model.Users;
+import com.audora.app.service.BooksService;
 import com.audora.app.service.JWTService;
 import com.audora.app.service.UsersService;
 import com.audora.app.wrapper.ApiWrapper;
@@ -29,6 +32,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -41,6 +45,9 @@ public class UserController {
 
     @Value("${upload.dir}")
     private String uploadDir;
+
+    @Autowired
+    private BooksService booksService;
 
 
     @GetMapping("/login")
@@ -93,8 +100,12 @@ public class UserController {
     }
 
     @RequestMapping("/")
-    public String home(){
-        return "Welcome to quizapp Home";
+    public String home(Model model){
+        List<Books> books = booksService.getAllBooks();
+        List<Categories> categories = booksService.getCategory();
+        model.addAttribute("categories",categories);
+        model.addAttribute("books",books);
+        return "index";
     }
 
 
@@ -140,9 +151,14 @@ public class UserController {
     @GetMapping("/user/home")
     public String getHomePage( Model model){
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        List<Books> books = booksService.getAllBooks();
+        List<Categories> categories = booksService.getCategory();
         Users user1 = usersService.getUser(userName);
         System.out.println("From Home page : "+ user1);
+        model.addAttribute("categories",categories);
         model.addAttribute("users",user1);
+        model.addAttribute("books",books);
         return "user/home";
     }
 
@@ -155,6 +171,7 @@ public class UserController {
 
         return "user/profile";
     }
+
 
 
 
