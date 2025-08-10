@@ -178,9 +178,75 @@
         .reveal:nth-child(3) { animation-delay: 0.3s; }
         .reveal:nth-child(4) { animation-delay: 0.4s; }
         .reveal:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Black text for book titles */
+        .book-title {
+            color: #000 !important;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+
+        /* Enhanced card styling */
+        .enhanced-card {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .enhanced-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Section highlight */
+        .section-highlight {
+            position: relative;
+        }
+
+        .section-highlight:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #f6d365 0%, #fda085 100%);
+            border-radius: 2px;
+        }
+
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            to {
+                transform: translateY(-1000px);
+            }
+        }
     </style>
 </head>
-<body class="animated-bg min-h-screen">
+<body class="animated-bg min-h-screen relative overflow-x-hidden">
+
+<!-- Floating particles background -->
+<div class="particles" id="particles"></div>
 
 <!-- Navbar -->
 <nav class="glass fixed w-full top-0 z-50">
@@ -238,7 +304,7 @@
         <p class="mt-6 text-white text-xl max-w-2xl mx-auto opacity-90 font-light leading-relaxed">
             Listen to captivating audiobooks anytime, anywhere. Start your magical journey through countless stories now!
         </p>
-        <a href="#" class="mt-10 inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-10 py-4 rounded-full shadow-2xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 pulse-ring font-semibold text-lg sparkle">
+        <a href="#popular-books" class="mt-10 inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-10 py-4 rounded-full shadow-2xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 pulse-ring font-semibold text-lg sparkle" id="exploreBtn">
             ✨ Explore Library
         </a>
     </div>
@@ -250,9 +316,9 @@
 </header>
 
 <!-- Popular Audiobooks -->
-<section class="px-6 py-16 glass rounded-t-3xl shadow-2xl mx-4 mb-8 reveal">
+<section class="px-6 py-16 glass rounded-t-3xl shadow-2xl mx-4 mb-8 reveal" id="popular-books">
     <div class="text-center mb-12">
-        <h3 class="text-4xl font-bold text-white mb-4 icon-bounce drop-shadow-lg">📚 Popular Audiobooks</h3>
+        <h3 class="text-4xl font-bold text-white mb-4 icon-bounce drop-shadow-lg section-highlight">📚 Popular Audiobooks</h3>
         <div class="w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 mx-auto rounded-full"></div>
     </div>
 
@@ -260,12 +326,17 @@
         <!-- Scrollable container -->
         <div class="scroll-section flex overflow-x-auto pb-8 hide-scrollbar scroll-smooth space-x-6 px-4">
             <!-- Product cards -->
-            <div th:each="book : ${books}" class="reveal flex-shrink-0 w-52 glass-card rounded-xl overflow-hidden shadow-lg card-hover sparkle">
-                <img th:src="@{'/Images/' + ${book.image}}" alt="Book Cover" class="w-full h-48 object-cover">
+            <div th:each="book : ${books}" class="reveal flex-shrink-0 w-52 enhanced-card rounded-xl overflow-hidden shadow-lg card-hover sparkle">
+                <img th:src="@{'/Images/Books/' + ${book.image}}" alt="Book Cover" class="w-full h-48 object-cover">
                 <div class="p-4 card-content">
-                    <h4 th:text="${book.title}" class="text-lg font-bold text-white mb-2 hover:text-yellow-300 transition duration-300 line-clamp-2 leading-tight drop-shadow-lg"></h4>
-                    <p th:text="${book.author}" class="text-xs text-purple-200 mb-4 font-medium"></p>
-                    <a th:href="@{'/book/' + ${book.audiobookId}}" class="inline-flex items-center space-x-1 text-purple-900 bg-gradient-to-r from-yellow-300 to-orange-300 px-4 py-2 rounded-full font-bold text-sm hover:from-yellow-400 hover:to-orange-400 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
+                    <h4 th:text="${book.title}" class="text-lg font-bold book-title mb-2 hover:text-yellow-300 transition duration-300 line-clamp-2 leading-tight drop-shadow-lg"></h4>
+                    <p th:text="${book.author}"
+                       class="text-xs font-medium mb-4
+          bg-gradient-to-r from-purple-400 to-blue-400
+          bg-clip-text text-transparent
+          drop-shadow-md hover:drop-shadow-lg
+          transition-all duration-300">
+                    </p>                    <a th:href="@{'/user/viewbook/' + ${book.audiobookId}}" class="inline-flex items-center space-x-1 text-purple-900 bg-gradient-to-r from-yellow-300 to-orange-300 px-4 py-2 rounded-full font-bold text-sm hover:from-yellow-400 hover:to-orange-400 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
                         <span>🎧</span><span>Listen</span>
                     </a>
                 </div>
@@ -289,7 +360,7 @@
 <!-- Category Sections -->
 <section th:each="category : ${categories}" class="px-6 py-16 glass rounded-2xl shadow-2xl mx-4 mb-8 reveal">
     <div class="text-center mb-12">
-        <h3 class="text-4xl font-bold text-white mb-4 drop-shadow-lg" th:text="'📚 ' + ${category.categoryName}"></h3>
+        <h3 class="text-4xl font-bold text-white mb-4 drop-shadow-lg section-highlight" th:text="'📚 ' + ${category.categoryName}"></h3>
         <div class="w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 mx-auto rounded-full"></div>
     </div>
 
@@ -297,11 +368,15 @@
         <!-- Scrollable container -->
         <div class="scroll-section flex overflow-x-auto pb-8 hide-scrollbar scroll-smooth space-x-6 px-4">
             <!-- Product cards -->
-            <div th:each="book : ${category.books}" class="reveal flex-shrink-0 w-52 glass-card rounded-xl overflow-hidden shadow-lg card-hover sparkle">
-                <img th:src="@{'/Images/' + ${book.image}}" alt="Book Cover" class="w-full h-48 object-cover">
+            <div th:each="book : ${category.books}" class="reveal flex-shrink-0 w-52 enhanced-card rounded-xl overflow-hidden shadow-lg card-hover sparkle">
+                <img th:src="@{'/Images/Books/' + ${book.image}}" alt="Book Cover" class="w-full h-48 object-cover">
                 <div class="p-4 card-content">
-                    <h4 th:text="${book.title}" class="text-lg font-bold text-white mb-2 hover:text-yellow-300 transition duration-300 line-clamp-2 leading-tight drop-shadow-lg"></h4>
-                    <p th:text="${book.author}" class="text-xs text-purple-200 mb-4 font-medium"></p>
+                    <h4 th:text="${book.title}" class="text-lg font-bold book-title mb-2 hover:text-yellow-300 transition duration-300 line-clamp-2 leading-tight drop-shadow-lg"></h4>
+                    <p th:text="${book.author}" class="text-xs font-medium mb-4
+          bg-gradient-to-r from-purple-400 to-blue-400
+          bg-clip-text text-transparent
+          drop-shadow-md hover:drop-shadow-lg
+          transition-all duration-300"></p>
                     <a href="#" class="inline-flex items-center space-x-1 text-purple-900 bg-gradient-to-r from-yellow-300 to-orange-300 px-4 py-2 rounded-full font-bold text-sm hover:from-yellow-400 hover:to-orange-400 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
                         <span>🎧</span><span>Listen</span>
                     </a>
@@ -392,7 +467,46 @@
                 scrollRightBtn.style.display = isEnd ? 'none' : 'block';
             });
         });
+
+        // Smooth scroll to popular books section
+        document.getElementById('exploreBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.getElementById('popular-books');
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
     });
+
+    // Create floating particles
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+
+            // Random properties
+            const size = Math.random() * 10 + 5;
+            const posX = Math.random() * 100;
+            const duration = Math.random() * 20 + 10;
+            const delay = Math.random() * 5;
+
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${posX}%`;
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.animationDelay = `${delay}s`;
+
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    // Initialize particles when DOM is loaded
+    document.addEventListener('DOMContentLoaded', createParticles);
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>

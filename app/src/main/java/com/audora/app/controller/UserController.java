@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.Banner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -116,6 +117,14 @@ public class UserController {
         if (authentication.isAuthenticated()) {
             String key = jwtService.generateToken(user.getUserEmail());
 
+            // 3️⃣ Clear any old JWT cookie
+            Cookie clearCookie = new Cookie("jwtToken", null);
+            clearCookie.setHttpOnly(true);
+            clearCookie.setSecure(true); // if using HTTPS
+            clearCookie.setPath("/");
+            clearCookie.setMaxAge(0); // expires immediately
+            httpServletResponse.addCookie(clearCookie);
+
             if (key != null) {
                 Cookie cookie = new Cookie("jwtToken", key);
                 cookie.setHttpOnly(true);
@@ -159,6 +168,7 @@ public class UserController {
         model.addAttribute("categories",categories);
         model.addAttribute("users",user1);
         model.addAttribute("books",books);
+
         return "user/home";
     }
 
@@ -166,11 +176,15 @@ public class UserController {
     public String getProfilePage(Model model){
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user1 = usersService.getUser(userName);
+
         model.addAttribute("users",user1);
 
 
         return "user/profile";
     }
+
+
+
 
 
 

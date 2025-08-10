@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ public class Books {
     private String language;
     private String genre;
     private String description;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date releaseDate;
     private String isbn;
     private String fileFormat;
@@ -32,6 +34,8 @@ public class Books {
     private String availability;
     private String image;
 
+    @OneToMany(mappedBy = "books", cascade = CascadeType.ALL)
+    private List<Chapter> chapters;
 
     @ManyToMany
     @JoinTable(

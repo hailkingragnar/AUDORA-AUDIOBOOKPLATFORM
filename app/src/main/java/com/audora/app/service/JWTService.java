@@ -45,10 +45,10 @@ public class JWTService {
     }
 
 
-   Date now = new Date();
 
     public String generateToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
+        Date now = new Date();
 
         return Jwts.builder()
                 .setClaims(claims)

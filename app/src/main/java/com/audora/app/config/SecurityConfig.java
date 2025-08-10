@@ -2,6 +2,7 @@ package com.audora.app.config;
 
 import com.audora.app.service.MyUserDetailService;
 import com.audora.app.wrapper.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,14 +30,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
-                .csrf(customizer->customizer.disable())
-                .authorizeHttpRequests(request->request
-                        .requestMatchers("/register", "/login", "/","/authenticate","/api/v1/authenticate").permitAll()
+                .csrf(customizer -> customizer.disable())
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/register", "/login", "/", "/authenticate", "/api/v1/authenticate","/logout", "/login?logout").permitAll()
                         .anyRequest().authenticated())
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        }))
                 .formLogin(formLogin ->
                         formLogin.loginPage("/login")
                                 .failureUrl("/login?error=true"))
-
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -7,6 +7,7 @@ import com.audora.app.repo.CategoriesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,6 +22,9 @@ public class CategoryService {
         Categories categories = categoriesRepo.findByCategoryName(categoryName).orElseGet(() -> categoriesRepo.save(new Categories(UUID.randomUUID().toString(),categoryName)));
        System.out.println("The category name is : " + categories.categoryName);
         return  categories;
+    }
+    public List<Categories> categoriesList(){
+     return categoriesRepo.findAll();
     }
 
 

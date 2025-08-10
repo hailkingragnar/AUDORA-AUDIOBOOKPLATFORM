@@ -90,6 +90,15 @@ public class JwtFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                // Delete the JWT cookie
+                Cookie cookie = new Cookie("jwtToken", null);
+                cookie.setHttpOnly(true);
+                cookie.setPath("/");
+                cookie.setMaxAge(0); // Expire immediately
+                response.addCookie(cookie);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token invalid");
+                return;
             }
         }
 

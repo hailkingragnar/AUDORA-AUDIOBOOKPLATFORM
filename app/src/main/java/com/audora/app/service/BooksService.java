@@ -1,21 +1,24 @@
 package com.audora.app.service;
 
+import com.audora.app.dto.BooksDTO;
+import com.audora.app.dto.ChaptersDTO;
 import com.audora.app.model.Books;
 import com.audora.app.model.Categories;
+import com.audora.app.model.Chapter;
 import com.audora.app.repo.BooksRepo;
 import com.audora.app.repo.CategoriesRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Book;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class BooksService {
+
+    @Autowired
+    private S3Service s3Service;
 
     @Autowired
     private BooksRepo booksRepo;
@@ -23,6 +26,8 @@ public class BooksService {
     @Autowired
     private CategoriesRepo categoriesRepo;
 
+    @Autowired
+    private CategoryService categoryService;
 
     @Transactional
     public void saveAudiobook(Books book) {
@@ -30,7 +35,7 @@ public class BooksService {
     }
 
     @Autowired
-    private CategoryService categoryService;
+    private ChapterService chapterService;
 
 //    @Transactional
 //    public void saveSampleAudiobooks() {
@@ -91,21 +96,58 @@ public class BooksService {
         return booksRepo.findAll();
     }
 
-    @Transactional
-    public void setCategoryandBook(String bookName, List<String> categoryNames){
 
-    Books book = booksRepo.findByTitle(bookName).get();
-    System.out.println("The bookname is : "+ book.getTitle());
+    @Transactional
+    public boolean setCategoryandBook(BooksDTO booksDTO, String fileName){
+    boolean status = false;
+    try{
+     List<String> categoryNames = booksDTO.getCategoryNames();
+     Books book = new Books();
+
+     System.out.println("The bookname is : "+ booksDTO.getTitle());
         List<Categories> categories = categoryNames.stream()
                 .map(categoryService::setCategoryName)
                 .collect(Collectors.toList());
 
+
+        System.out.println("The chapters are : "+ booksDTO.getChapters());
+
         book.setCategoriesList(categories);
+        book.setAuthor(booksDTO.getAuthor());
+        book.setAvailability(booksDTO.getAvailability());
+        book.setDuration(booksDTO.getDuration());
+        book.setGenre(booksDTO.getGenre());
+        book.setDescription(booksDTO.getDescription());
+        book.setFileFormat(booksDTO.getFileFormat());
+        book.setImage(fileName);
+        book.setIsbn(booksDTO.getIsbn());
+        book.setNarrator(booksDTO.getNarrator());
+        book.setLanguage(booksDTO.getLanguage());
+        book.setPrice(booksDTO.getPrice());
+        book.setReleaseDate(booksDTO.getReleaseDate());
+        book.setTitle(booksDTO.getTitle());
+        Books savedBook = booksRepo.save(book);
+
+        System.out.println("The Book obj is : " + book);
+
+        List<Chapter> chapternew =  chapterService.setchapterDetails(booksDTO.getChapters(),savedBook);
+
+
+        savedBook.setChapters(chapternew);
         booksRepo.save(book);
+        status = true;
+    } catch(Exception e){
+        return status;
+    }
+        return status;
     }
 
     public List<Categories> getCategory() {
-   return categoriesRepo.findAll();
+    return categoriesRepo.findAll();
 
+    }
+
+    public Books findBookById(String audiobookId) {
+    return booksRepo.findById(audiobookId).get();
     }
 }
