@@ -18,6 +18,17 @@ public class Chapter {
     @Id
     private String id = UUID.randomUUID().toString();
     private String title;
+
+    @Override
+    public String toString() {
+        return "Chapter{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", audioFileKey='" + audioFileKey + '\'' +
+                ", duration='" + duration + '\'' +
+                '}';
+    }
+
     private String duration; // in seconds
     private String audioFileKey; // S3 object key
 

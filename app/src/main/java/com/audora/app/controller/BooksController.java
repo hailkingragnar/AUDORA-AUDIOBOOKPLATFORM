@@ -62,6 +62,26 @@ public class BooksController {
         model.addAttribute("chapters",chapter);
         return "books/books";
     }
+    @GetMapping("/book/viewchapter/{id}")
+    public String viewChapter(@PathVariable("id") String id , Model model){
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user1 = usersService.getUser(userName);
+        System.out.println("the Chapter id is : " + id);
+          Chapter chapter = chapterService.findChapterByChapterId(id);
+          System.out.println("The chapter is : " + chapter);
+
+          Books book = chapter.getBooks();
+          List<Chapter> chapters = chapterService.findChapterById(book.getAudiobookId());
+        System.out.println("All the chapters are : "+ chapters);
+
+          model.addAttribute("book",book);
+          model.addAttribute("users",user1);
+          model.addAttribute("chapter",chapter);
+        model.addAttribute("chapters",chapters);
+
+
+        return "books/chapter";
+    }
 
 
 }

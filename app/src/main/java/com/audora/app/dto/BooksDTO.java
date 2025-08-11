@@ -29,6 +29,27 @@ public class BooksDTO {
     private String fileFormat;
     private Double price;
     private String availability;
+
+    @Override
+    public String toString() {
+        return "BooksDTO{" +
+                "title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", narrator='" + narrator + '\'' +
+                ", duration='" + duration + '\'' +
+                ", language='" + language + '\'' +
+                ", genre='" + genre + '\'' +
+                ", description='" + description + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", isbn='" + isbn + '\'' +
+                ", fileFormat='" + fileFormat + '\'' +
+                ", price=" + price +
+                ", availability='" + availability + '\'' +
+                ", image=" + image +
+                ", categoryNames=" + categoryNames +
+                '}';
+    }
+
     private MultipartFile image;
     private List<String> categoryNames;
     private List<ChaptersDTO> chapters;

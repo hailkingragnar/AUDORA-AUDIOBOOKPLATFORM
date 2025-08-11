@@ -58,4 +58,11 @@ public class ChapterService {
     public List<Chapter> findChapterById(String id) {
     return chapterRepo.findByIdAudioBookId(id);
     }
+
+    public Chapter findChapterByChapterId(String id) {
+         Chapter chapter =  chapterRepo.findById(id).get();
+
+         return chapter;
+    }
+
 }

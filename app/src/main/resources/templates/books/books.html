@@ -277,20 +277,22 @@
     <div class="view-more-container">
       <div class="space-y-2">
         <!-- Episode 1 -->
-        <div class="glass-card rounded-lg overflow-hidden episode-card cursor-pointer hover:bg-white/20 transition-all duration-300">
-          <div class="flex h-full">
-            <div class="episode-image">
-              <img src="https://m.media-amazon.com/images/I/81bsw6fnUiL._AC_UF1000,1000_QL80_.jpg"
-                   alt="Episode Cover"
-                   class="w-full h-full object-cover">
-            </div>
-            <div class="flex-1 p-2 flex flex-col justify-center">
-              <h3 class="font-medium text-white text-sm mb-1">Chapter 1: The Silent Patient</h3>
-              <p class="text-xs text-white opacity-80">12:45 • Louise Brealey</p>
-            </div>
-          </div>
-        </div>
 
+        <div th:each="chapter : ${chapters}" class="glass-card rounded-lg overflow-hidden episode-card cursor-pointer hover:bg-white/20 transition-all duration-300">
+          <a th:href="@{'/book/viewchapter/' + ${chapter.id}}" class="block h-full" onclick="event.stopPropagation()">
+            <div class="flex h-full">
+              <div class="episode-image">
+                <img th:src="@{'/Images/Books/'+${book.image}}"
+                     alt="Episode Cover"
+                     class="w-full h-full object-cover">
+              </div>
+              <div class="flex-1 p-2 flex flex-col justify-center">
+                <h3 th:text="${chapter.title}" class="font-medium text-white text-sm mb-1">Chapter 1: The Silent Patient</h3>
+                <p th:text="${chapter.duration}" class="text-xs text-white opacity-80">12:45 • Louise Brealey</p>
+              </div>
+            </div>
+          </a>
+        </div>
 
 
       <div class="view-more-button">
@@ -506,27 +508,32 @@
     });
 
     // Episode click functionality
-    const episodes = document.querySelectorAll('.episode-card');
-    episodes.forEach(episode => {
-      episode.addEventListener('click', function() {
-        // Get episode data
-        const episodeTitle = this.querySelector('h3').textContent;
+const episodes = document.querySelectorAll('.episode-card');
+episodes.forEach(episode => {
+  episode.addEventListener('click', function(e) {
+    // If the click was on the link, don't show the player
+    if (e.target.closest('a')) {
+      return;
+    }
 
-        // Update player info
-        document.getElementById('player-episode-title').textContent = episodeTitle;
+    // Get episode data
+    const episodeTitle = this.querySelector('h3').textContent;
 
-        // Play the episode (in a real app, you would change the audio source)
-        audio.play();
+    // Update player info
+    document.getElementById('player-episode-title').textContent = episodeTitle;
 
-        // Update both play buttons
-        const coverPlayIcon = document.getElementById('cover-play-icon');
-        const bottomPlayIcon = playPauseBtn.querySelector('i');
-        coverPlayIcon.className = 'fas fa-pause';
-        bottomPlayIcon.className = 'fas fa-pause';
+    // Play the episode (in a real app, you would change the audio source)
+    audio.play();
 
-        bottomPlayer.classList.add('active');
-      });
-    });
+    // Update both play buttons
+    const coverPlayIcon = document.getElementById('cover-play-icon');
+    const bottomPlayIcon = playPauseBtn.querySelector('i');
+    coverPlayIcon.className = 'fas fa-pause';
+    bottomPlayIcon.className = 'fas fa-pause';
+
+    bottomPlayer.classList.add('active');
+  });
+  });
   });
 </script>
 </body>

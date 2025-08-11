@@ -37,6 +37,27 @@ public class Books {
     @OneToMany(mappedBy = "books", cascade = CascadeType.ALL)
     private List<Chapter> chapters;
 
+    @Override
+    public String toString() {
+        return "Books{" +
+                "audiobookId='" + audiobookId + '\'' +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", narrator='" + narrator + '\'' +
+                ", duration='" + duration + '\'' +
+                ", language='" + language + '\'' +
+                ", genre='" + genre + '\'' +
+                ", description='" + description + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", isbn='" + isbn + '\'' +
+                ", fileFormat='" + fileFormat + '\'' +
+                ", price=" + price +
+                ", availability='" + availability + '\'' +
+                ", image='" + image + '\'' +
+                ", categoriesList=" + categoriesList +
+                '}';
+    }
+
     @ManyToMany
     @JoinTable(
             name = "book_categories",
