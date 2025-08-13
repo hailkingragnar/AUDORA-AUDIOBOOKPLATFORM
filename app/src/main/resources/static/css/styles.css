@@ -1,0 +1,135 @@
+/* =============================================
+   BASE STYLES & ANIMATIONS
+   ============================================= */
+
+/**
+ * Body styles with animated gradient background
+ * Includes full viewport height and padding for bottom player
+ */
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(-45deg, #000000, #111111, #222222, #000000);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  min-height: 100vh;
+  padding-bottom: 80px;
+  color: white; /* Ensures text remains visible on dark background */
+}
+
+/**
+ * Keyframes for the gradient background animation
+ * Creates a smooth color transition effect
+ */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/**
+ * Floating animation for decorative elements
+ * Creates subtle up/down movement
+ */
+@keyframes floating {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+/* =============================================
+   UTILITY CLASSES
+   ============================================= */
+
+/**
+ * Hide scrollbar while maintaining scroll functionality
+ * Works across all major browsers
+ */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/**
+ * Highlight text for search matches or emphasis
+ */
+.highlight {
+  background-color: rgba(139, 92, 246, 0.3);
+  font-weight: bold;
+}
+
+/* =============================================
+   GLASSMORPHISM EFFECTS
+   ============================================= */
+
+/**
+ * Base glass effect with blur and transparency
+ */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/**
+ * Enhanced glass card with stronger blur
+ */
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* =============================================
+   COMPONENT SPECIFIC STYLES
+   ============================================= */
+
+/**
+ * Autocomplete dropdown styling
+ * Includes custom scrollbar
+ */
+#autocompleteResults {
+  scrollbar-width: thin;
+  scrollbar-color: #6b7280 #1f2937;
+}
+
+#autocompleteResults::-webkit-scrollbar {
+  width: 8px;
+}
+
+#autocompleteResults::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+#autocompleteResults::-webkit-scrollbar-thumb {
+  background-color: #6b7280;
+  border-radius: 4px;
+}
+
+/**
+ * Episode card styling
+ * Fixed dimensions for consistent layout
+ */
+.episode-card {
+  height: 80px;
+}
+
+.episode-image {
+  height: 80px;
+  width: 80px;
+}
+
+/**
+ * Floating elements animation class
+ * Apply to elements that should have subtle movement
+ */
+.floating {
+  animation: floating 6s ease-in-out infinite;
+}
+
+
+/**
+* For Google Login Button OAUTH2
+*/

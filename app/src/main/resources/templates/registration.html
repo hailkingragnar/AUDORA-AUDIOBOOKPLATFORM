@@ -9,87 +9,46 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
         }
 
-        /* Animated gradient background */
-        .animated-bg {
-            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Enhanced glassmorphism */
-        .glass-card {
+        /* Glass effect matching home page */
+        .glass {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Enhanced card for register form */
+        .enhanced-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .enhanced-card:hover {
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
 
-        /* Floating elements animation */
-        .floating {
-            animation: floating 6s ease-in-out infinite;
-        }
-
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-20px) rotate(5deg); }
-            66% { transform: translateY(-10px) rotate(-3deg); }
-        }
-
-        /* Gradient text */
+        /* Gradient text matching home page */
         .gradient-text {
-            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            background: linear-gradient(45deg, #a855f7, #3b82f6, #06b6d4);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-size: 300% 300%;
-            animation: gradientShift 8s ease infinite;
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
         }
 
-        /* Input focus glow */
-        .input-glow:focus {
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
-            border-color: rgba(102, 126, 234, 0.6);
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
-        /* Button pulse animation */
-        .pulse-btn {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pulse-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transition: width 0.6s, height 0.6s;
-            transform: translate(-50%, -50%);
-            z-index: 0;
-        }
-
-        .pulse-btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .pulse-btn > span {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Sparkle animation */
+        /* Button styling matching home page */
         .sparkle {
             position: relative;
             overflow: hidden;
@@ -111,6 +70,34 @@
             50%, 100% { left: 100%; }
         }
 
+        /* Input styling */
+        .input-enhanced {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-enhanced:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .input-enhanced:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Floating animation */
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
         /* Reveal animation */
         .reveal {
             opacity: 0;
@@ -125,68 +112,15 @@
             }
         }
 
-        /* Stagger animation delays */
-        .reveal:nth-child(1) { animation-delay: 0.1s; }
-        .reveal:nth-child(2) { animation-delay: 0.2s; }
-        .reveal:nth-child(3) { animation-delay: 0.3s; }
-        .reveal:nth-child(4) { animation-delay: 0.4s; }
-        .reveal:nth-child(5) { animation-delay: 0.5s; }
-
-        /* Hover lift effect */
-        .hover-lift {
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Icon bounce */
+        .icon-bounce {
+            animation: iconBounce 2s infinite;
         }
 
-        .hover-lift:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Icon animations */
-        .icon-pulse {
-            animation: iconPulse 2s infinite;
-        }
-
-        @keyframes iconPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-
-        /* Input container hover effect */
-        .input-container {
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .input-container:hover {
-            transform: translateY(-2px);
-        }
-
-        .input-container::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            padding: 2px;
-            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
-            border-radius: 14px;
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .input-container:hover::before {
-            opacity: 0.3;
-        }
-
-        /* Profile picture preview animation */
-        .profile-preview {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .profile-preview:hover {
-            transform: scale(1.05);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        @keyframes iconBounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
 
         /* File input styling */
@@ -208,155 +142,268 @@
             align-items: center;
             justify-content: center;
             padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px dashed rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             transition: all 0.3s ease;
             cursor: pointer;
         }
 
         .file-input-label:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
+        }
+
+        /* Profile picture preview animation */
+        .profile-preview {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .profile-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Step indicator styling */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin: 0 0.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: linear-gradient(45deg, #a855f7, #3b82f6);
+            transform: scale(1.1);
+        }
+
+        .step.completed {
+            background: linear-gradient(45deg, #10b981, #06b6d4);
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 1rem;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        /* Form step transitions */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="animated-bg min-h-screen px-4 py-8 relative overflow-x-hidden flex items-center justify-center">
 
-<!-- Decorative floating elements -->
-<div class="absolute top-10 left-10 text-6xl opacity-20 floating">🎧</div>
-<div class="absolute top-20 right-20 text-4xl opacity-15 floating" style="animation-delay: 1s;">📚</div>
-<div class="absolute bottom-20 left-20 text-5xl opacity-10 floating" style="animation-delay: 2s;">✨</div>
-<div class="absolute bottom-32 right-32 text-3xl opacity-20 floating" style="animation-delay: 1.5s;">🎵</div>
-<div class="absolute top-1/2 left-5 text-4xl opacity-10 floating" style="animation-delay: 3s;">📖</div>
-<div class="absolute top-1/4 right-10 text-5xl opacity-15 floating" style="animation-delay: 2.5s;">🌟</div>
+ <!-- <th:block th:replace="~{fragments/navbarloginsignup :: navbarLogin}"></th:block> -->
 
-<div class="glass-card p-8 md:p-10 rounded-3xl w-full max-w-lg text-white hover-lift sparkle reveal my-8">
-    <!-- Logo and Title -->
-    <div class="text-center mb-8">
-        <div class="text-4xl mb-4 icon-pulse">🚀</div>
-        <h2 class="text-4xl font-black gradient-text mb-2">Join AUDORA</h2>
-        <p class="text-purple-200 text-sm font-light">Start your incredible audio journey today</p>
-    </div>
+<body class="min-h-screen relative overflow-x-hidden">
 
-    <form th:action="@{/register}" th:object="${user}" enctype="multipart/form-data" method="POST" class="space-y-6">
-        <!-- Full Name Field -->
-        <div class="input-container reveal">
-            <label class="block mb-2 text-sm font-semibold text-purple-200 flex items-center space-x-2">
-                <span>👤</span>
-                <span>Full Name</span>
-            </label>
-            <input
-                    type="text"
-                    th:field="*{name}"
-                    placeholder="Your full name"
-                    required
-                    class="w-full px-5 py-4 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300 text-white placeholder-purple-200 input-glow backdrop-blur-sm"
-            />
+
+<!-- Background decorative elements -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-20 left-20 text-6xl opacity-10 floating">🎧</div>
+    <div class="absolute top-32 right-32 text-4xl opacity-5 floating" style="animation-delay: 1s;">📚</div>
+    <div class="absolute bottom-32 left-32 text-5xl opacity-10 floating" style="animation-delay: 2s;">✨</div>
+    <div class="absolute bottom-20 right-20 text-3xl opacity-5 floating" style="animation-delay: 1.5s;">🎵</div>
+    <div class="absolute top-1/2 left-5 text-4xl opacity-10 floating" style="animation-delay: 3s;">📖</div>
+</div>
+
+<div class="flex items-center justify-center min-h-screen w-full">
+    <div class="enhanced-card rounded-2xl mt-12 w-full max-w-md px-6 shadow-2xl reveal mb-8 mx-4">
+        <!-- Step Indicator -->
+        <div class="step-indicator pt-6">
+            <div class="step active" id="step1">1</div>
+            <div class="step" id="step2">2</div>
+            <div class="step" id="step3">3</div>
         </div>
 
-        <!-- Email Field -->
-        <div class="input-container reveal">
-            <label class="block mb-2 text-sm font-semibold text-purple-200 flex items-center space-x-2">
-                <span>📧</span>
-                <span>Email Address</span>
-            </label>
-            <input
-                    type="email"
-                    th:field="*{email}"
-                    placeholder="you@example.com"
-                    required
-                    class="w-full px-5 py-4 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300 text-white placeholder-purple-200 input-glow backdrop-blur-sm"
-            />
+        <!-- Logo and Title -->
+        <div class="text-center mb-4">
+            <h2 class="text-lg font-bold gradient-text mb-1 p-4 floating">Join AUDORA</h2>
+            <p class="text-gray-400 text-sm font-light">Start your incredible audio journey today</p>
         </div>
 
-        <!-- Password Field -->
-        <div class="input-container reveal">
-            <label class="block mb-2 text-sm font-semibold text-purple-200 flex items-center space-x-2">
-                <span>🔒</span>
-                <span>Create Password</span>
-            </label>
-            <input
-                    type="password"
-                    th:field="*{password}"
-                    placeholder="Create a secure password"
-                    required
-                    class="w-full px-5 py-4 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300 text-white placeholder-purple-200 input-glow backdrop-blur-sm"
-            />
-        </div>
+        <form th:action="@{/register}" th:object="${user}" enctype="multipart/form-data" method="POST" class="space-y-5">
+            <!-- Step 1: Basic Information -->
+            <div class="form-step active" id="formStep1">
+                <!-- Full Name Field -->
+                <div>
+                    <label class="block mb-1 text-sm font-semibold text-white flex items-center space-x-2">
+                        <span>👤</span>
+                        <span>Full Name</span>
+                    </label>
+                    <input
+                            type="text"
+                            th:field="*{name}"
+                            placeholder="Your full name"
+                            required
+                            class="w-full px-4 py-3 rounded-xl input-enhanced focus:outline-none text-white placeholder-gray-400"
+                    />
+                </div>
 
-        <!-- Profile Picture Field with Live Preview -->
-        <div class="input-container reveal">
-            <label class="block mb-2 text-sm font-semibold text-purple-200 flex items-center space-x-2">
-                <span>📷</span>
-                <span>Profile Picture (Optional)</span>
-            </label>
+                <!-- Email Field -->
+                <div>
+                    <label class="block mb-1 text-sm font-semibold text-white flex items-center space-x-2">
+                        <span>📧</span>
+                        <span>Email Address</span>
+                    </label>
+                    <input
+                            type="email"
+                            th:field="*{email}"
+                            placeholder="you@example.com"
+                            required
+                            class="w-full px-4 py-3 rounded-xl input-enhanced focus:outline-none text-white placeholder-gray-400"
+                    />
+                </div>
 
-            <div class="file-input">
-                <input
-                        type="file"
-                        th:field="*{profilePicture}"
-                        accept="image/*"
-                        id="profilePicInput"
-                        onchange="previewImage(event)"
-                />
-                <label for="profilePicInput" class="file-input-label text-purple-200">
-                    <span class="mr-2">📁</span>
-                    <span>Choose your profile picture</span>
-                </label>
-            </div>
-
-            <!-- Live Image Preview -->
-            <div class="mt-6 flex justify-center" id="imagePreviewContainer">
-                <div class="relative">
-                    <img id="profilePicPreview" src="" alt="Profile Picture Preview"
-                         class="w-32 h-32 object-cover rounded-full hidden profile-preview border-4 border-white/20" />
-                    <button type="button" id="removeImageButton"
-                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold hover:bg-red-600 transition-colors duration-300 hidden transform hover:scale-110"
-                            onclick="removeImage()">
-                        ✕
+                <div class="flex justify-end pt-4">
+                    <button type="button" onclick="nextStep(1)" class="px-6 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium rounded-lg hover:from-purple-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105">
+                        Next Step →
                     </button>
                 </div>
             </div>
-        </div>
 
-        <button
-                type="submit"
-                class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl pulse-btn reveal"
-        >
-                <span class="flex items-center justify-center space-x-2">
-                    <span>🌟</span>
-                    <span>Create My Account</span>
-                </span>
-        </button>
-    </form>
+            <!-- Step 2: Password -->
+            <div class="form-step" id="formStep2">
+                <!-- Password Field -->
+                <div>
+                    <label class="block mb-1 text-sm font-semibold text-white flex items-center space-x-2">
+                        <span>🔒</span>
+                        <span>Create Password</span>
+                    </label>
+                    <input
+                            type="password"
+                            th:field="*{password}"
+                            placeholder="Create a secure password"
+                            required
+                            id="password"
+                            class="w-full px-4 py-3 rounded-xl input-enhanced focus:outline-none text-white placeholder-gray-400"
+                    />
+                </div>
 
-    <!-- Divider -->
-    <div class="flex items-center my-8">
-        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-        <span class="px-4 text-sm text-purple-200">or</span>
-        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-    </div>
+                <!-- Confirm Password Field -->
+                <div>
+                    <label class="block mb-1 text-sm font-semibold text-white flex items-center space-x-2">
+                        <span>🔐</span>
+                        <span>Confirm Password</span>
+                    </label>
+                    <input
+                            type="password"
+                            placeholder="Confirm your password"
+                            required
+                            id="confirmPassword"
+                            class="w-full px-4 py-3 rounded-xl input-enhanced focus:outline-none text-white placeholder-gray-400"
+                    />
+                    <p id="passwordError" class="text-red-400 text-xs mt-1 hidden">Passwords don't match!</p>
+                </div>
 
-    <!-- Login Link -->
-    <p class="text-center text-sm text-purple-200">
-        Already part of our community?
-        <a href="/login" class="text-yellow-300 hover:text-yellow-200 transition-colors duration-300 font-semibold hover:underline ml-2">
-            🎧 Sign In Here
-        </a>
-    </p>
+                <div class="flex justify-between pt-4">
+                    <button type="button" onclick="prevStep(2)" class="px-6 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-all duration-300 transform hover:scale-105">
+                        ← Previous
+                    </button>
+                    <button type="button" onclick="nextStep(2)" class="px-6 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium rounded-lg hover:from-purple-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105">
+                        Next Step →
+                    </button>
+                </div>
+            </div>
 
-    <!-- Footer -->
-    <div class="text-center mt-8 pt-6 border-t border-white/20">
-        <p class="text-xs text-purple-300 opacity-75">
-            Join thousands of audiobook enthusiasts ✨
+            <!-- Step 3: Profile Picture -->
+            <div class="form-step" id="formStep3">
+                <!-- Profile Picture Field with Live Preview -->
+                <div>
+                    <label class="block mb-1 text-sm font-semibold text-white flex items-center space-x-2">
+                        <span>📷</span>
+                        <span>Profile Picture (Optional)</span>
+                    </label>
+
+                    <div class="file-input">
+                        <input
+                                type="file"
+                                th:field="*{profilePicture}"
+                                accept="image/*"
+                                id="profilePicInput"
+                                onchange="previewImage(event)"
+                        />
+                        <label for="profilePicInput" class="file-input-label text-gray-300">
+                            <span class="mr-2">📁</span>
+                            <span>Choose your profile picture</span>
+                        </label>
+                    </div>
+
+                    <!-- Live Image Preview -->
+                    <div class="mt-4 flex justify-center" id="imagePreviewContainer">
+                        <div class="relative">
+                            <img id="profilePicPreview" src="" alt="Profile Picture Preview"
+                                 class="w-24 h-24 object-cover rounded-full hidden profile-preview border-2 border-white/20" />
+                            <button type="button" id="removeImageButton"
+                                    class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-red-600 transition-colors duration-300 hidden transform hover:scale-110"
+                                    onclick="removeImage()">
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between pt-8">
+                    <button type="button" onclick="prevStep(3)" class="px-6 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-all duration-300 transform hover:scale-105">
+                        ← Previous
+                    </button>
+                    <button
+                            type="submit"
+                            class="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl sparkle"
+                    >
+                        <span class="flex items-center justify-center space-x-2">
+                            <span>🌟</span>
+                            <span>Complete Registration</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Login Link -->
+        <p class="text-center text-sm text-gray-400 mt-6 pb-6">
+            Already part of our community?
+            <a href="/login" class="text-yellow-400 hover:text-yellow-300 transition-colors duration-300 font-semibold hover:underline ml-1">
+                🎧 Sign In Here
+            </a>
         </p>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script th:inline="javascript">
     /*<![CDATA[*/
     let success = [[${success != null}]];
@@ -369,11 +416,11 @@
             text: [[${success}]],
             timer: 3000,
             showConfirmButton: false,
-            background: 'rgba(255, 255, 255, 0.1)',
+            background: 'rgba(0, 0, 0, 0.9)',
             backdrop: 'rgba(0, 0, 0, 0.4)',
             color: '#fff',
             customClass: {
-                popup: 'backdrop-blur-lg'
+                popup: 'backdrop-blur-lg border border-white/10'
             }
         });
     }
@@ -385,35 +432,122 @@
             text: [[${error}]],
             timer: 3000,
             showConfirmButton: false,
-            background: 'rgba(255, 255, 255, 0.1)',
+            background: 'rgba(0, 0, 0, 0.9)',
             backdrop: 'rgba(0, 0, 0, 0.4)',
             color: '#fff',
             customClass: {
-                popup: 'backdrop-blur-lg'
+                popup: 'backdrop-blur-lg border border-white/10'
             }
         });
     }
     /*]]>*/
 
+    // Form step navigation
+    function nextStep(currentStep) {
+        console.log(`Attempting to go to next step from step ${currentStep}`);
+
+        // Validate current step before proceeding
+        if (currentStep === 1) {
+            const name = document.querySelector('input[name="name"]').value;
+            const email = document.querySelector('input[name="email"]').value;
+
+            if (!name || !email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Information',
+                    text: 'Please fill in all fields before proceeding',
+                    background: 'rgba(0, 0, 0, 0.9)',
+                    color: '#fff'
+                });
+                return;
+            }
+        } else if (currentStep === 2) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                document.getElementById('passwordError').classList.remove('hidden');
+                return;
+            }
+        }
+
+        // Hide current step
+        const currentFormStep = document.getElementById(`formStep${currentStep}`);
+        const currentStepIndicator = document.getElementById(`step${currentStep}`);
+
+        if (currentFormStep) currentFormStep.classList.remove('active');
+        if (currentStepIndicator) {
+            currentStepIndicator.classList.remove('active');
+            currentStepIndicator.classList.add('completed');
+        }
+
+        // Show next step
+        const nextStepNum = currentStep + 1;
+        const nextFormStep = document.getElementById(`formStep${nextStepNum}`);
+        const nextStepIndicator = document.getElementById(`step${nextStepNum}`);
+
+        if (nextFormStep) nextFormStep.classList.add('active');
+        if (nextStepIndicator) nextStepIndicator.classList.add('active');
+
+        console.log(`Successfully moved to step ${nextStepNum}`);
+    }
+
+    function prevStep(currentStep) {
+        console.log(`Going back to previous step from step ${currentStep}`);
+
+        // Hide current step
+        const currentFormStep = document.getElementById(`formStep${currentStep}`);
+        const currentStepIndicator = document.getElementById(`step${currentStep}`);
+
+        if (currentFormStep) currentFormStep.classList.remove('active');
+        if (currentStepIndicator) currentStepIndicator.classList.remove('active');
+
+        // Show previous step
+        const prevStepNum = currentStep - 1;
+        const prevFormStep = document.getElementById(`formStep${prevStepNum}`);
+        const prevStepIndicator = document.getElementById(`step${prevStepNum}`);
+
+        if (prevFormStep) prevFormStep.classList.add('active');
+        if (prevStepIndicator) {
+            prevStepIndicator.classList.add('active');
+            prevStepIndicator.classList.remove('completed');
+        }
+
+        console.log(`Successfully moved back to step ${prevStepNum}`);
+    }
+
+    // Password match validation
+    document.getElementById('confirmPassword')?.addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = this.value;
+        const errorElement = document.getElementById('passwordError');
+
+        if (password !== confirmPassword) {
+            errorElement?.classList.remove('hidden');
+        } else {
+            errorElement?.classList.add('hidden');
+        }
+    });
+
     // Live image preview function
     function previewImage(event) {
         const file = event.target.files[0];
-        const reader = new FileReader();
+        if (!file) return;
 
-        reader.onload = function () {
+        const reader = new FileReader();
+        reader.onload = function() {
             const preview = document.getElementById('profilePicPreview');
             const removeButton = document.getElementById('removeImageButton');
             const label = document.querySelector('.file-input-label span:last-child');
 
-            preview.src = reader.result;
-            preview.classList.remove('hidden');  // Show the image preview
-            removeButton.classList.remove('hidden'); // Show the remove button
-            label.textContent = 'Picture selected! ✅'; // Update label text
+            if (preview) {
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+            }
+            if (removeButton) removeButton.classList.remove('hidden');
+            if (label) label.textContent = 'Picture selected! ✅';
         };
-
-        if (file) {
-            reader.readAsDataURL(file);
-        }
+        reader.readAsDataURL(file);
     }
 
     // Function to remove the uploaded image
@@ -423,14 +557,19 @@
         const removeButton = document.getElementById('removeImageButton');
         const label = document.querySelector('.file-input-label span:last-child');
 
-        // Clear the file input
-        inputFile.value = '';
-
-        // Hide the preview and remove button
-        preview.classList.add('hidden');
-        removeButton.classList.add('hidden');
-        label.textContent = 'Choose your profile picture'; // Reset label text
+        if (inputFile) inputFile.value = '';
+        if (preview) preview.classList.add('hidden');
+        if (removeButton) removeButton.classList.add('hidden');
+        if (label) label.textContent = 'Choose your profile picture';
     }
+
+    // Initialize form steps
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Registration form initialized');
+        // Ensure only the first step is visible initially
+        document.getElementById('formStep1')?.classList.add('active');
+        document.getElementById('step1')?.classList.add('active');
+    });
 </script>
 
 </body>

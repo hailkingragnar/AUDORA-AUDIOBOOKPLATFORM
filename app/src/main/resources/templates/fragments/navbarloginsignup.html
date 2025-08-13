@@ -1,0 +1,95 @@
+<nav th:fragment="navbarLogin" class="fixed w-full top-0 z-50 bg-[#263238]">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+        <!-- Logo -->
+        <a th:href="@{/}" class="flex items-center h-full"> <!-- Fixed height container -->
+            <!-- Optimized Logo Image -->
+            <img th:src="@{'/Images/AudoraLogoNew.png'}"
+                 alt="Audora Logo"
+                 class="h-12 w-12 object-contain mr-2">  <!-- Reduced size and added object-contain -->
+
+            <!-- Adjusted Text Logo -->
+            <h1 class="text-xl font-extrabold text-white">AUDORA</h1> <!-- Reduced text size -->
+        </a>
+
+        <!-- Search Bar in Navbar -->
+        <div class="hidden md:flex flex-1 max-w-md mx-6 relative">
+            <div class="relative w-full">
+                <input type="text"
+                       id="searchInput"
+                       placeholder="Search audiobooks..."
+                       class="w-full py-2 px-4 rounded-full bg-gray-700 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                       autocomplete="off">
+                <button class="absolute right-3 top-2 text-gray-300 hover:text-white">
+                    🔍
+                </button>
+                <!-- Autocomplete Dropdown -->
+                <div id="autocompleteResults"
+                     class="hidden absolute z-50 w-full mt-1 bg-gray-800 rounded-lg shadow-lg max-h-80 overflow-y-auto">
+                    <!-- Results will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side elements -->
+        <div class="flex items-center space-x-4">
+            <!-- Language Selector -->
+            <div class="relative hidden sm:block">
+                <button id="languageDropdownButton" class="flex items-center text-white hover:text-yellow-300 transition">
+                    <span class="mr-1">🇳🇵</span>
+                    <span class="hidden md:inline">Nepali</span>
+                    <span class="ml-1">▼</span>
+                </button>
+                <div id="languageDropdown" class="absolute right-0 mt-2 w-40 bg-[#363636] rounded-lg shadow-lg hidden border border-gray-600">
+                    <ul class="py-1 text-white">
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🏔️</span> Newar
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">⛰️</span> Sherpa
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🏞️</span> Tamang
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🌄</span> Tharu
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🇳🇵</span> Nepalese
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🏯</span> Maithali
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <a href="#" class="hidden sm:block px-3 py-1 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full hover:from-purple-600 hover:to-blue-600 transition transform hover:scale-105 text-sm sm:text-base">
+                    Free Trial
+                </a>
+                <a th:href="@{/login}" class="px-3 py-1 sm:px-4 sm:py-2 text-white hover:text-yellow-300 transition text-sm sm:text-base">
+                    Login
+                </a>
+                <a th:href="@{/register}" class="px-3 py-1 sm:px-4 sm:py-2 bg-yellow-500 text-gray-900 rounded-full hover:bg-yellow-400 transition transform hover:scale-105 text-sm sm:text-base">
+                    Sign Up
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Dropdown Script -->
+    <script>
+        document.getElementById('languageDropdownButton')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('languageDropdown');
+            dropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            const dropdown = document.getElementById('languageDropdown');
+            if (dropdown) dropdown.classList.add('hidden');
+        });
+    </script>
+</nav>

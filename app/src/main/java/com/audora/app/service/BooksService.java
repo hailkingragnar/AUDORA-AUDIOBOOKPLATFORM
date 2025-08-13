@@ -1,5 +1,6 @@
 package com.audora.app.service;
 
+import com.audora.app.dto.BookSearchDTO;
 import com.audora.app.dto.BooksDTO;
 import com.audora.app.dto.ChaptersDTO;
 import com.audora.app.model.Books;
@@ -9,6 +10,9 @@ import com.audora.app.repo.BooksRepo;
 import com.audora.app.repo.CategoriesRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -149,5 +153,27 @@ public class BooksService {
 
     public Books findBookById(String audiobookId) {
     return booksRepo.findById(audiobookId).get();
+    }
+
+    public List<BookSearchDTO> autocomplete(String q, int limit) {
+        Pageable pageable = PageRequest.of(0, limit, Sort.by("title").ascending());
+
+
+      return    booksRepo
+               .findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
+               q,q, pageable)
+               .stream()
+               .map(this :: convertToDTO)
+               .collect(Collectors.toList());
+
+    }
+
+    private BookSearchDTO convertToDTO(Books books){
+         return new BookSearchDTO(
+                 books.getAudiobookId(),
+                 books.getTitle(),
+                 books.getAuthor(),
+                 books.getImage()
+         );
     }
 }

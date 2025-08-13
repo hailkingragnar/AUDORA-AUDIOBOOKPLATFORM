@@ -9,6 +9,7 @@ import com.audora.app.model.Users;
 import com.audora.app.service.BooksService;
 import com.audora.app.service.JWTService;
 import com.audora.app.service.UsersService;
+import com.audora.app.utils.SecurityUtils;
 import com.audora.app.wrapper.ApiWrapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -67,6 +68,9 @@ public class UserController {
     @PostMapping("/register")
     public String register(@ModelAttribute("user") UserRegistration users , RedirectAttributes redirectAttributes, @RequestParam("profilePicture")MultipartFile file){
 
+        System.out.println("The profile picture is : " + users.getProfilePicture());
+
+
         File dir = new File(uploadDir);
         if(!dir.exists()){
             dir.mkdirs();
@@ -116,6 +120,7 @@ public class UserController {
 
         if (authentication.isAuthenticated()) {
             String key = jwtService.generateToken(user.getUserEmail());
+            jwtService.generateToken(user.getUserEmail());
 
             // 3️⃣ Clear any old JWT cookie
             Cookie clearCookie = new Cookie("jwtToken", null);
@@ -159,7 +164,7 @@ public class UserController {
 
     @GetMapping("/user/home")
     public String getHomePage( Model model){
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userName = SecurityUtils.getUserEmail();
 
         List<Books> books = booksService.getAllBooks();
         List<Categories> categories = booksService.getCategory();
@@ -174,7 +179,7 @@ public class UserController {
 
     @GetMapping("/user/profile")
     public String getProfilePage(Model model){
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userName = SecurityUtils.getUserEmail();
         Users user1 = usersService.getUser(userName);
 
         model.addAttribute("users",user1);

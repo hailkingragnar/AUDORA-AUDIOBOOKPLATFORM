@@ -8,6 +8,7 @@ import com.audora.app.repo.RolesRepo;
 import com.audora.app.repo.UsersRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +73,7 @@ public class UsersService {
 
 
     public Users getUser(String username ) {
-        Users user1 = usersRepo.findByEmail(username).get();
-        return user1;
+        return usersRepo.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 }

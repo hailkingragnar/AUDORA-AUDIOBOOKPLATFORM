@@ -1,0 +1,121 @@
+<nav th:fragment="navbar" class="fixed w-full top-0 z-50 bg-[#0f172a]">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center" th:object="${users}">
+        <a th:href="@{/user/home}" class="flex items-center h-full">
+            <img th:src="@{'/Images/AudoraLogoNew.png'}"
+                 alt="Audora Logo"
+                 class="h-12 w-12 object-contain mr-2">
+            <h1 class="text-xl font-extrabold text-white">AUDORA</h1>
+        </a>
+
+        <!-- Search Bar in Navbar -->
+        <div class="hidden md:flex flex-1 max-w-md mx-6 relative">
+            <div class="relative w-full">
+                <input type="text"
+                       id="searchInput"
+                       placeholder="Search audiobooks..."
+                       class="w-full py-2 px-4 rounded-full bg-gray-700 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                       autocomplete="off">
+                <button class="absolute right-3 top-2 text-gray-300 hover:text-white">
+                    🔍
+                </button>
+                <div id="autocompleteResults"
+                     class="hidden absolute z-50 w-full mt-1 bg-gray-800 rounded-lg shadow-lg max-h-80 overflow-y-auto">
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories Dropdown -->
+        <div class="relative hidden md:block ml-4">
+            <button id="categoriesDropdownButton" class="flex items-center text-white hover:text-yellow-300 transition px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600">
+                <span>Categories</span>
+                <span class="ml-2">▼</span>
+            </button>
+            <div id="categoriesDropdown" class="absolute left-0 mt-2 w-64 bg-[#363636] rounded-lg shadow-lg hidden border border-gray-600">
+                <div class="p-4">
+                    <h3 class="text-lg font-bold text-white mb-2">Browse by Category</h3>
+                    <div class="grid grid-cols-2 gap-2" th:each="category : ${categories}">
+                        <a th:href="@{'/category/books/' + ${category.id}}" class="px-3 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded flex items-center">
+                            <span th:text="${category.categoryName}" class="mr-2"></span>
+                        </a>
+
+                    </div>
+                    <a href="/categories" class="block mt-3 text-center text-purple-300 hover:text-purple-200 text-sm">
+                        View all categories →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side elements -->
+        <div class="flex items-center space-x-4">
+            <!-- Language Selector -->
+            <div class="relative hidden sm:block">
+                <button id="languageDropdownButton" class="flex items-center text-white hover:text-yellow-300 transition">
+                    <span class="mr-1">🇳🇵</span>
+                    <span class="hidden md:inline">Nepali</span>
+                    <span class="ml-1">▼</span>
+                </button>
+                <div id="languageDropdown" class="absolute right-0 mt-2 w-40 bg-[#363636] rounded-lg shadow-lg hidden border border-gray-600">
+                    <ul class="py-1 text-white">
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🏔️</span> Newar
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">⛰️</span> Sherpa
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🏞️</span> Tamang
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🌄</span> Tharu
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🇳🇵</span> Nepalese
+                        </li>
+                        <li class="px-4 py-2 hover:bg-gray-600 cursor-pointer flex items-center">
+                            <span class="mr-2">🏯</span> Maithali
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="space-x-8 flex items-center">
+                <a class="text-white font-medium hover:text-yellow-300 transition duration-300 transform hover:scale-105">Home</a>
+                <a href="#" class="text-white font-medium hover:text-yellow-300 transition duration-300 transform hover:scale-105">My Library</a>
+
+                <!-- User Profile Dropdown -->
+                <div class="relative">
+                    <img th:src="@{'/Images/profilepicture/'+ ${users.profilePicture}}" alt="Profile Picture"
+                         class="w-12 h-12 rounded-full object-cover cursor-pointer hover:ring-4 hover:ring-purple-400 transition-all duration-300"
+                         id="profileDropdownButton">
+
+                    <div class="absolute right-0 mt-3 w-52 bg-[#363636] rounded-2xl shadow-2xl opacity-0 invisible transition-all duration-300 transform scale-95"
+                         id="profileDropdownMenu">
+                        <ul class="text-white py-2">
+                            <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 transition-all duration-300 rounded-xl mx-2">
+                                <a th:href="@{/user/profile}" class="flex items-center space-x-2">
+                                    <span>👤</span><span>Profile Settings</span>
+                                </a>
+                            </li>
+                            <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 transition-all duration-300 rounded-xl mx-2">
+                                <a href="#" class="flex items-center space-x-2">
+                                    <span>⭐</span><span>Subscriptions</span>
+                                </a>
+                            </li>
+                            <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-red-100/20 hover:to-pink-100/20 transition-all duration-300 rounded-xl mx-2">
+                                <a href="/logout" class="text-red-300 flex items-center space-x-2">
+                                    <span>🚪</span><span>Logout</span>
+                                </a>
+                            </li>
+                            <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 transition-all duration-300 rounded-xl mx-2">
+                                <a href="#" class="flex items-center space-x-2">
+                                    <span>ℹ️</span><span>About</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

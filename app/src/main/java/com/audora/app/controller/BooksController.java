@@ -1,6 +1,7 @@
 package com.audora.app.controller;
 
 import com.audora.app.model.Books;
+import com.audora.app.model.Categories;
 import com.audora.app.model.Chapter;
 import com.audora.app.model.Users;
 import com.audora.app.repo.ChapterRepo;
@@ -8,6 +9,7 @@ import com.audora.app.service.BooksService;
 import com.audora.app.service.CategoryService;
 import com.audora.app.service.ChapterService;
 import com.audora.app.service.UsersService;
+import com.audora.app.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -53,7 +55,7 @@ public class BooksController {
 
     @GetMapping("/user/viewbook/{id}")
     public String viewBook(@PathVariable("id") String audiobookId, Model model){
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userName = SecurityUtils.getUserEmail();
         Users user1 = usersService.getUser(userName);
         Books book = booksService.findBookById(audiobookId);
         List<Chapter> chapter = chapterService.findChapterById(audiobookId);
@@ -64,7 +66,7 @@ public class BooksController {
     }
     @GetMapping("/book/viewchapter/{id}")
     public String viewChapter(@PathVariable("id") String id , Model model){
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userName = SecurityUtils.getUserEmail();
         Users user1 = usersService.getUser(userName);
         System.out.println("the Chapter id is : " + id);
           Chapter chapter = chapterService.findChapterByChapterId(id);
@@ -74,6 +76,8 @@ public class BooksController {
           List<Chapter> chapters = chapterService.findChapterById(book.getAudiobookId());
         System.out.println("All the chapters are : "+ chapters);
 
+
+        model.addAttribute("currentPlayingChapterId",id);
           model.addAttribute("book",book);
           model.addAttribute("users",user1);
           model.addAttribute("chapter",chapter);
@@ -81,6 +85,19 @@ public class BooksController {
 
 
         return "books/chapter";
+    }
+
+    @GetMapping("category/books/{id}")
+    public String booksInsideCategory(@PathVariable String id, Model model){
+        Categories category = categoryService.getCategoryById(id);
+        String userName = SecurityUtils.getUserEmail();
+        Users user1 = usersService.getUser(userName);
+        List<Categories> categories = booksService.getCategory();
+        model.addAttribute("categories",categories);
+        model.addAttribute("users",user1);
+        model.addAttribute("category",category);
+
+        return "books/category";
     }
 
 

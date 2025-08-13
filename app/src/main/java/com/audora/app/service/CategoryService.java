@@ -14,6 +14,7 @@ import java.util.UUID;
 public class CategoryService {
 
 
+
     @Autowired
     private CategoriesRepo categoriesRepo;
 
@@ -28,5 +29,7 @@ public class CategoryService {
     }
 
 
-
+    public Categories getCategoryById(String id) {
+        return categoriesRepo.findById(id).get();
+    }
 }

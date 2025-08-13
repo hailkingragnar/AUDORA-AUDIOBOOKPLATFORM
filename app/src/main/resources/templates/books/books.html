@@ -1,362 +1,146 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audiobook Player</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    .view-more-container {
-      position: relative;
-    }
-    .view-more-button {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(transparent, rgba(255,255,255,0.9));
-      padding-top: 60px;
-      text-align: center;
-    }
+<head th:replace="~{fragments/head :: head('Audiobook Player')}">
 
-    .episode-card {
-      height: 80px;
-    }
-    .episode-image {
-      height: 80px;
-      width: 80px;
-    }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-      min-height: 100vh;
-      padding-bottom: 80px; /* Space for fixed player */
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* Glassmorphism effect */
-    .glass {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .glass-card {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    /* Floating elements animation */
-    .floating {
-      animation: floating 6s ease-in-out infinite;
-    }
-
-    @keyframes floating {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-20px); }
-    }
-
-    /* Cover image hover play button */
-    .cover-container {
-      position: relative;
-      display: inline-block;
-    }
-
-    .cover-hover-play {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.5);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      border-radius: 0.5rem;
-      cursor: pointer;
-    }
-
-    .cover-container:hover .cover-hover-play {
-      opacity: 1;
-    }
-
-    .cover-hover-play button {
-      background: rgba(255,255,255,0.9);
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #3b82f6;
-      font-size: 24px;
-      border: none;
-      outline: none;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      transition: transform 0.2s ease;
-    }
-
-    .cover-hover-play button:hover {
-      transform: scale(1.1);
-    }
-
-    /* Fixed bottom player */
-    .bottom-player {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 80px;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
-      z-index: 100;
-      transform: translateY(100%);
-      transition: transform 0.3s ease;
-    }
-
-    .bottom-player.active {
-      transform: translateY(0);
-    }
-
-    .player-progress {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: rgba(0,0,0,0.1);
-    }
-
-    .player-progress-bar {
-      height: 100%;
-      background: #3b82f6;
-      width: 0%;
-    }
-
-    /* Custom range input styling */
-    input[type="range"] {
-      -webkit-appearance: none;
-      height: 4px;
-      background: rgba(0,0,0,0.1);
-      border-radius: 2px;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      background: #3b82f6;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-  </style>
 </head>
-<body>
+<body class="bg-gray-900">
 
-<!-- Decorative floating elements -->
-<div class="floating-element fixed top-10 left-10 text-4xl floating" style="animation-delay: 0s;">🎧</div>
-<div class="floating-element fixed top-20 right-20 text-3xl floating" style="animation-delay: 1s; opacity: 0.15;">📚</div>
-<div class="floating-element fixed bottom-20 left-20 text-5xl floating" style="animation-delay: 2s;">✨</div>
-<div class="floating-element fixed bottom-32 right-32 text-3xl floating" style="animation-delay: 1.5s; opacity: 0.2;">🎵</div>
+<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
 
-<!-- Navbar -->
-<nav class="glass fixed w-full top-0 z-50">
-  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center" th:object="${users}">
-    <a th:href="@{/user/home}"><h1 class="text-2xl font-extrabold text-white floating">📘 AUDORA</h1></a>
-    <div class="space-x-8 flex items-center">
-      <a class="text-white font-medium hover:text-yellow-300 transition duration-300 transform hover:scale-105">Home</a>
-      <a href="#" class="text-white font-medium hover:text-yellow-300 transition duration-300 transform hover:scale-105">My Library</a>
-
-      <!-- User Profile Dropdown -->
-      <div class="relative">
-        <img th:src="@{'/Images/profilepicture/'+ ${users.profilePicture}}" alt="Profile Picture"
-             class="w-12 h-12 rounded-full object-cover cursor-pointer hover:ring-4 hover:ring-purple-400 transition-all duration-300"
-             id="profileDropdownButton">
-
-        <div class="absolute right-0 mt-3 w-52 glass-card rounded-2xl shadow-2xl opacity-0 invisible transition-all duration-300 transform scale-95"
-             id="profileDropdownMenu">
-          <ul class="text-white py-2">
-            <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 transition-all duration-300 rounded-xl mx-2">
-              <a th:href="@{/user/profile}" class="flex items-center space-x-2">
-                <span>👤</span><span>Profile Settings</span>
-              </a>
-            </li>
-            <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 transition-all duration-300 rounded-xl mx-2">
-              <a href="#" class="flex items-center space-x-2">
-                <span>⭐</span><span>Subscriptions</span>
-              </a>
-            </li>
-            <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-red-100/20 hover:to-pink-100/20 transition-all duration-300 rounded-xl mx-2">
-              <a href="/logout" class="text-red-300 flex items-center space-x-2">
-                <span>🚪</span><span>Logout</span>
-              </a>
-            </li>
-            <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 transition-all duration-300 rounded-xl mx-2">
-              <a href="#" class="flex items-center space-x-2">
-                <span>ℹ️</span><span>About</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-
-<!-- Main Content -->
-<div class="container mx-auto max-w-4xl pt-28 pb-12 relative z-10" th:object="${book}">
-  <!-- Big Cover Image with Hover Play Button - Adjusted dimensions -->
-  <div class="flex justify-center px-4 md:px-8 mb-8">
-    <div class="cover-container w-full max-w-2xl">
-      <img th:src="@{'/Images/Books/'+${book.image}}"
-           alt="Book Cover"
-           class="w-full h-[450px] object-cover rounded-lg shadow-lg">
-      <div class="cover-hover-play">
-        <button id="cover-play-button">
-          <i class="fas fa-play" id="cover-play-icon"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Title -->
-  <h1 th:text="${book.title}" class="text-2xl font-bold text-white text-center mb-2">The Silent Patient</h1>
-
-  <!-- Meta Info -->
-  <div class="flex justify-center space-x-4 text-white mb-4 text-sm">
-    <span><i class="fas fa-eye mr-1"></i> 1.2M views</span>
-    <span><i class="fas fa-star text-yellow-400 mr-1"></i> 4.5</span>
-    <span th:text="${book.language}"><i class="fas fa-language mr-1"></i> English</span>
-    <span th:text="${book.genre}"><i class="fas fa-tag mr-1"></i> Thriller</span>
-  </div>
-
-  <!-- Action Buttons -->
-  <div class="flex justify-between mb-6 px-4">
-    <button class="text-white hover:text-yellow-300 flex flex-col items-center">
-      <i class="fas fa-star text-lg mb-1"></i>
-      <span class="text-xs">Rate</span>
-    </button>
-    <button class="text-white hover:text-red-300 flex flex-col items-center">
-      <i class="fas fa-bookmark text-lg mb-1"></i>
-      <span class="text-xs">Save</span>
-    </button>
-    <button class="text-white hover:text-blue-300 flex flex-col items-center">
-      <i class="fas fa-share-alt text-lg mb-1"></i>
-      <span class="text-xs">Share</span>
-    </button>
-  </div>
-
-  <!-- Description -->
-  <div class="glass-card p-4 rounded-xl mb-6">
-    <h2 class="text-lg font-bold text-white mb-2">Description</h2>
-    <p th:text="${book.description}" class="text-sm text-white opacity-90">
-      The Silent Patient is a shocking psychological thriller of a woman's act of violence against her husband—and of the therapist obsessed with uncovering her motive.
-    </p>
-  </div>
-
-  <!-- Episodes -->
-  <div class="mb-6">
-    <h2 class="text-lg font-bold text-white mb-3">Episodes</h2>
-
-    <div class="view-more-container">
-      <div class="space-y-2">
-        <!-- Episode 1 -->
-
-        <div th:each="chapter : ${chapters}" class="glass-card rounded-lg overflow-hidden episode-card cursor-pointer hover:bg-white/20 transition-all duration-300">
-          <a th:href="@{'/book/viewchapter/' + ${chapter.id}}" class="block h-full" onclick="event.stopPropagation()">
-            <div class="flex h-full">
-              <div class="episode-image">
-                <img th:src="@{'/Images/Books/'+${book.image}}"
-                     alt="Episode Cover"
-                     class="w-full h-full object-cover">
-              </div>
-              <div class="flex-1 p-2 flex flex-col justify-center">
-                <h3 th:text="${chapter.title}" class="font-medium text-white text-sm mb-1">Chapter 1: The Silent Patient</h3>
-                <p th:text="${chapter.duration}" class="text-xs text-white opacity-80">12:45 • Louise Brealey</p>
-              </div>
-            </div>
-          </a>
-        </div>
-
-
-      <div class="view-more-button">
-        <button class="bg-white text-blue-600 px-4 py-1 rounded-full shadow-sm border border-gray-200 hover:bg-gray-50 text-sm">
-          View More Episodes
-        </button>
-      </div>
-    </div>
-  </div>
-  </div>
-
-  <!-- More Videos -->
-  <div class="mb-6">
-    <h2 class="text-lg font-bold text-white mb-3">More Like This</h2>
-    <div class="grid grid-cols-3 gap-3">
-      <!-- Video 1 -->
-      <div class="glass-card rounded-lg overflow-hidden">
-        <img th:src=@{"/Images/Books/build.jpg"}
-             alt="Book Cover"
-             class="w-full h-24 object-cover">
-        <div class="p-2">
-          <h3 class="font-medium text-white text-xs mb-1">The Girl on the Train</h3>
-          <p class="text-2xs text-white opacity-80">Paula Hawkins • 4.3</p>
+<!-- Dynamic Background Cover -->
+<div id="cover-background" class="h-96 w-full relative bg-gradient-to-b from-blue-900 to-gray-900">
+  <div class="container mx-auto max-w-6xl h-full relative z-10">
+    <div class="flex flex-col md:flex-row gap-8 h-full items-start pt-20 pb-12 px-4">
+      <!-- Book Cover (Square) with corrected positioning -->
+      <div class="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 flex-shrink-0 shadow-2xl mt-8">
+        <div class="relative group h-full">
+          <img th:src="@{'/Images/Books/'+${book.image}}"
+               alt="Book Cover"
+               class="w-full h-full object-contain aspect-[3/4]"
+               loading="lazy" decoding="async">
+          <!-- Hover Play Button -->
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button id="cover-play-button" class="w-16 h-16 bg-blue-600 bg-opacity-90 rounded-full flex items-center justify-center hover:bg-blue-700 transform transition-transform hover:scale-105">
+              <i class="fas fa-play text-white text-2xl" id="cover-play-icon"></i>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Video 2 -->
-      <div class="glass-card rounded-lg overflow-hidden">
-        <img src="https://m.media-amazon.com/images/I/81bsw6fnUiL._AC_UF1000,1000_QL80_.jpg"
-             alt="Book Cover"
-             class="w-full h-24 object-cover">
-        <div class="p-2">
-          <h3 class="font-medium text-white text-xs mb-1">Gone Girl</h3>
-          <p class="text-2xs text-white opacity-80">Gillian Flynn • 4.2</p>
+      <!-- Book Info -->
+      <div class="flex-1 text-white pb-8 mt-8">
+        <h1 th:text="${book.title}" class="text-3xl md:text-4xl lg:text-5xl font-bold mb-2"></h1>
+        <p class="text-lg md:text-xl text-gray-300 mb-6">By <span th:text="${book.author}">Author Name</span></p>
+
+        <!-- Meta Info -->
+        <div class="flex flex-wrap gap-4 mb-6">
+          <div class="flex items-center">
+            <i class="fas fa-clock mr-2 text-blue-300"></i>
+            <span th:text="${book.duration}">8h 45m</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-language mr-2 text-blue-300"></i>
+            <span th:text="${book.language}">English</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-eye mr-2 text-blue-300"></i>
+            <span>1.2M views</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-star text-yellow-400 mr-2"></i>
+            <span>4.5</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-4">
+          <button id="main-play-button" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-full font-medium flex items-center">
+            <i class="fas fa-play mr-2"></i> Play Trailer
+          </button>
+          <button class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-full font-medium flex items-center">
+            <i class="far fa-bookmark mr-2"></i> Save
+          </button>
+          <button class="bg-gray-800 hover:bg-gray-700 text-white w-10 h-10 rounded-full flex items-center justify-center">
+            <i class="fas fa-ellipsis-h"></i>
+          </button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Hidden Audio Element -->
+<!-- Main Content -->
+<div class="container mx-auto max-w-6xl px-4 pb-32">
+  <!-- Description Section (no card) -->
+  <div class="mb-8 pt-8">
+    <h2 class="text-xl font-bold text-white mb-4">About</h2>
+    <p th:text="${book.description}" class="text-gray-300 leading-relaxed"></p>
+  </div>
+
+  <!-- Divider -->
+  <div class="border-t border-gray-700 my-8"></div>
+
+  <!-- Episodes List -->
+  <div class="mb-12">
+    <h2 class="text-2xl font-bold text-white mb-6">Episodes</h2>
+    <div class="space-y-3">
+      <div th:each="chapter : ${chapters}" class="bg-gray-800 hover:bg-gray-700 rounded-lg transition-all duration-200">
+       <a th:href="@{'/book/viewchapter/' + ${chapter.id}}"> <div class="flex items-center p-4">
+          <div class="w-10 h-10 flex-shrink-0 bg-gray-700 rounded-full flex items-center justify-center mr-4">
+            <span class="text-gray-400" th:text="${chapterStat.count}">1</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 th:text="${chapter.title}" class="font-medium text-white truncate"></h3>
+            <p class="text-sm text-gray-400" th:text="${chapter.duration}">45:30</p>
+          </div>
+          <button class="w-10 h-10 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center ml-4">
+            <i class="fas fa-play text-white"></i>
+          </button>
+        </div> </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="border-t border-gray-700 my-8"></div>
+
+  <!-- More Like This -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-white mb-6">More Like This</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div class="bg-gray-800 hover:bg-gray-700 rounded-lg overflow-hidden transition-all duration-200">
+        <img src="#"
+             alt="Book Cover"
+             class="w-full aspect-square object-cover">
+        <div class="p-3">
+          <h3 class="font-medium text-white text-sm mb-1">Book Title</h3>
+          <p class="text-xs text-gray-400">Author Name</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Audio Player -->
 <audio id="audio-element">
   <source src="https://audoranepaliaudios.s3.ap-south-1.amazonaws.com/audio1.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Fixed Bottom Player -->
-<div id="bottom-player" class="bottom-player">
+<!-- Bottom Player (initially hidden) -->
+<div class="bottom-player hidden" id="bottom-player">
   <div class="player-progress">
     <div id="progress-bar" class="player-progress-bar"></div>
   </div>
-
-  <div class="flex items-center w-full">
-    <!-- Book Cover -->
+  <div class="flex items-center w-full px-4 py-2">
     <img id="player-book-cover" th:src="@{'/Images/Books/'+${book.image}}"
          alt="Book Cover"
          class="w-12 h-12 object-cover rounded mr-3">
-
-    <!-- Book Info -->
     <div class="flex-1 min-w-0">
-      <h3 id="player-book-title" th:text="${book.title}" class="font-medium text-gray-900 truncate">The Silent Patient</h3>
+      <h3 id="player-book-title" th:text="${book.title}" class="font-medium text-gray-900 truncate"></h3>
       <p id="player-episode-title" class="text-xs text-gray-600 truncate">Chapter 1: The Silent Patient</p>
     </div>
-
-    <!-- Player Controls -->
     <div class="flex items-center space-x-4 mx-4">
       <button id="rewind-10" class="text-gray-700 hover:text-blue-600">
         <i class="fas fa-backward"></i> -10
@@ -368,15 +152,11 @@
         +10 <i class="fas fa-forward"></i>
       </button>
     </div>
-
-    <!-- Time Display -->
     <div class="flex items-center space-x-2 mx-4">
       <span id="current-time" class="text-sm text-gray-700">0:00</span>
       <span class="text-sm text-gray-400">/</span>
       <span id="duration" class="text-sm text-gray-700">12:45</span>
     </div>
-
-    <!-- Volume Control -->
     <div class="flex items-center ml-4">
       <button id="volume-button" class="text-gray-700 mr-2">
         <i class="fas fa-volume-up"></i>
@@ -386,155 +166,9 @@
   </div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const audio = document.getElementById('audio-element');
-    const bottomPlayer = document.getElementById('bottom-player');
-    const playPauseBtn = document.getElementById('play-pause');
-    const progressBar = document.getElementById('progress-bar');
-    const currentTimeEl = document.getElementById('current-time');
-    const durationEl = document.getElementById('duration');
-    const rewindBtn = document.getElementById('rewind-10');
-    const forwardBtn = document.getElementById('forward-10');
-    const volumeBtn = document.getElementById('volume-button');
-    const volumeControl = document.getElementById('volume-control');
-    const coverPlayBtn = document.getElementById('cover-play-button');
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
 
-    // Format time as MM:SS
-    function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
-    }
 
-    // Update progress bar and time display
-    audio.addEventListener('timeupdate', function() {
-      const currentTime = audio.currentTime;
-      const duration = audio.duration;
-
-      // Update progress bar
-      if (duration) {
-        progressBar.style.width = (currentTime / duration) * 100 + '%';
-      }
-
-      // Update time display
-      currentTimeEl.textContent = formatTime(currentTime);
-    });
-
-    // Set total duration when metadata is loaded
-    audio.addEventListener('loadedmetadata', function() {
-      durationEl.textContent = formatTime(audio.duration);
-    });
-
-    // Play/pause toggle with icon update
-    function togglePlayPause() {
-      const coverPlayIcon = document.getElementById('cover-play-icon');
-      const bottomPlayIcon = playPauseBtn.querySelector('i');
-
-      if (audio.paused) {
-        audio.play();
-        coverPlayIcon.className = 'fas fa-pause';
-        bottomPlayIcon.className = 'fas fa-pause';
-        bottomPlayer.classList.add('active');
-      } else {
-        audio.pause();
-        coverPlayIcon.className = 'fas fa-play';
-        bottomPlayIcon.className = 'fas fa-play';
-      }
-    }
-
-    playPauseBtn.addEventListener('click', togglePlayPause);
-    coverPlayBtn.addEventListener('click', togglePlayPause);
-
-    // Rewind 10 seconds
-    rewindBtn.addEventListener('click', function() {
-      audio.currentTime = Math.max(0, audio.currentTime - 10);
-    });
-
-    // Forward 10 seconds
-    forwardBtn.addEventListener('click', function() {
-      audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
-    });
-
-    // Volume control
-    volumeControl.addEventListener('input', function() {
-      audio.volume = volumeControl.value;
-      volumeBtn.innerHTML = audio.volume === 0 ?
-        '<i class="fas fa-volume-mute"></i>' :
-        '<i class="fas fa-volume-up"></i>';
-    });
-
-    // Mute toggle
-    volumeBtn.addEventListener('click', function() {
-      audio.muted = !audio.muted;
-      if (audio.muted) {
-        volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-      } else {
-        volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-      }
-    });
-
-    // Click on progress bar to seek
-    document.querySelector('.player-progress').addEventListener('click', function(e) {
-      const percent = e.offsetX / this.offsetWidth;
-      audio.currentTime = percent * audio.duration;
-    });
-
-    // When audio ends
-    audio.addEventListener('ended', function() {
-      const coverPlayIcon = document.getElementById('cover-play-icon');
-      const bottomPlayIcon = playPauseBtn.querySelector('i');
-
-      coverPlayIcon.className = 'fas fa-play';
-      bottomPlayIcon.className = 'fas fa-play';
-    });
-
-    // Profile dropdown functionality
-    document.getElementById('profileDropdownButton').addEventListener('click', function() {
-      const menu = document.getElementById('profileDropdownMenu');
-      menu.classList.toggle('opacity-100');
-      menu.classList.toggle('invisible');
-      menu.classList.toggle('scale-95');
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-      const menu = document.getElementById('profileDropdownMenu');
-      const button = document.getElementById('profileDropdownButton');
-
-      if (!button.contains(event.target) && !menu.contains(event.target)) {
-        menu.classList.add('opacity-0', 'invisible', 'scale-95');
-      }
-    });
-
-    // Episode click functionality
-const episodes = document.querySelectorAll('.episode-card');
-episodes.forEach(episode => {
-  episode.addEventListener('click', function(e) {
-    // If the click was on the link, don't show the player
-    if (e.target.closest('a')) {
-      return;
-    }
-
-    // Get episode data
-    const episodeTitle = this.querySelector('h3').textContent;
-
-    // Update player info
-    document.getElementById('player-episode-title').textContent = episodeTitle;
-
-    // Play the episode (in a real app, you would change the audio source)
-    audio.play();
-
-    // Update both play buttons
-    const coverPlayIcon = document.getElementById('cover-play-icon');
-    const bottomPlayIcon = playPauseBtn.querySelector('i');
-    coverPlayIcon.className = 'fas fa-pause';
-    bottomPlayIcon.className = 'fas fa-pause';
-
-    bottomPlayer.classList.add('active');
-  });
-  });
-  });
-</script>
 </body>
 </html>

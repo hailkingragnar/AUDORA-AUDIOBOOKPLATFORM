@@ -27,21 +27,34 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
+    @Autowired
+    private OAuth2SuccessHandler oAuth2SuccessHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/register", "/login", "/", "/authenticate", "/api/v1/authenticate","/logout", "/login?logout").permitAll()
+                        .requestMatchers("/register", "/login", "/", "/authenticate", "/api/v1/authenticate","/logout", "/login?logout","/css/**", "/js/**", "/Images/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                         }))
+
+                //For form Login
                 .formLogin(formLogin ->
                         formLogin.loginPage("/login")
                                 .failureUrl("/login?error=true"))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+
+        // For OAuth2
+
+        http.oauth2Login(oauth2Login -> {
+            oauth2Login.loginPage("/login");
+            oauth2Login.successHandler(oAuth2SuccessHandler);
+        });
 
         return http.build();
     }
