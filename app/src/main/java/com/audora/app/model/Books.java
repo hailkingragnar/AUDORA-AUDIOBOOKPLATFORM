@@ -34,7 +34,10 @@ public class Books {
     private String availability;
     private String image;
 
-    @OneToMany(mappedBy = "books", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "books", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reviews> reviews;
+
+    @OneToMany(mappedBy = "books", cascade = CascadeType.ALL , orphanRemoval = true)
     private List<Chapter> chapters;
 
     @Override
@@ -66,5 +69,9 @@ public class Books {
     )
     @ToString.Exclude  // To prevent circular reference in toString()
     private List<Categories> categoriesList;
+
+    @ManyToOne
+    @JoinColumn(name = "author_Id")
+    private Authors authors;
 
 }

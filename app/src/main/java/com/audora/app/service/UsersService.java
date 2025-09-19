@@ -3,6 +3,8 @@ package com.audora.app.service;
 
 import com.audora.app.dto.UserLogin;
 import com.audora.app.dto.UserRegistration;
+import com.audora.app.enumpackage.RoleType;
+import com.audora.app.model.UserRoles;
 import com.audora.app.model.Users;
 import com.audora.app.repo.RolesRepo;
 import com.audora.app.repo.UsersRepo;
@@ -29,46 +31,44 @@ public class UsersService {
         return user1.getProfilePicture();
 
     }
-
     @Transactional
     public boolean registerUser(UserRegistration users, String fileName) {
+        try {
+            // 1️⃣ Check if user already exists
+            Optional<Users> existingUserOpt = usersRepo.findByEmail(users.getEmail());
+            if (existingUserOpt.isPresent()) {
+                // User already exists
+                return false;
+            }
 
-       try {
-           Users users1 = new Users();
-           users1.setEmail(users.getEmail());
-           users1.setName(users.getName());
-           users1.setPassword(passwordEncoder.encode(users.getPassword()));
-           users1.setProfilePicture(fileName);
+            // 2️⃣ Create new user entity
+            Users newUser = new Users();
+            newUser.setEmail(users.getEmail());
+            newUser.setName(users.getName());
+            newUser.setPassword(passwordEncoder.encode(users.getPassword()));
+            newUser.setProfilePicture(fileName);
+
+            // 3️⃣ Assign default ROLE_USER
+            UserRoles defaultRole = rolesRepo.findByRoles(RoleType.ROLE_USER)
+                    .orElseGet(() -> {
+                        UserRoles role = new UserRoles();
+                        role.setRoles(RoleType.ROLE_USER);
+                        return rolesRepo.save(role);
+                    });
+            newUser.getRole().add(defaultRole);
 
 
-//           Set<UserRoles> userRolesSet = new HashSet<>();
-//           for(String roles : users.getRoles()){
 
-//               RoleType roleEnum;
-//               try {
-//                   roleEnum = RoleType.valueOf(roles);  // Converts "USER" -> RoleType.USER
-//               } catch (IllegalArgumentException e) {
-//                   System.out.println("Invalid role: " + roles);
-//                   continue; // skip invalid role
-//               }
 
-//               Optional<UserRoles> userRoles = rolesRepo.findByRoles(roleEnum);
-//               UserRoles userRole = userRoles.orElseGet(() -> {
-//                   UserRoles userRoles1 = new UserRoles();
-//                   userRoles1.setRoles(roleEnum);
-//                 return  rolesRepo.save(userRoles1);
-//                   }); // save if not present
-//                   userRolesSet.add(userRole);
-//                   System.out.println("User Roles are :" + userRoles);
-//           }
+            // Save user
+            usersRepo.save(newUser);
+            return true;
 
-//           users1.setRole(userRolesSet);
-           usersRepo.save(users1);
-           return true;
-       } catch(Exception e){
-           return false;
-       }
-
+        } catch (Exception e) {
+            // Log the exception in production
+            e.printStackTrace();
+            return false;
+        }
     }
 
 

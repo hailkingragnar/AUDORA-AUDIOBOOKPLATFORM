@@ -22,6 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired
+    private JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Autowired
     private MyUserDetailService myUserDetailService;
 
     @Autowired
@@ -36,18 +39,13 @@ public class SecurityConfig {
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/register", "/login", "/", "/authenticate", "/api/v1/authenticate","/logout", "/login?logout","/css/**", "/js/**", "/Images/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Admin-only access
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // User access
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                        }))
-
-                //For form Login
-                .formLogin(formLogin ->
-                        formLogin.loginPage("/login")
-                                .failureUrl("/login?error=true"))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
+                        }));
 
         // For OAuth2
 
@@ -55,6 +53,20 @@ public class SecurityConfig {
             oauth2Login.loginPage("/login");
             oauth2Login.successHandler(oAuth2SuccessHandler);
         });
+
+             http   //For form Login
+                .formLogin(formLogin ->
+                        formLogin.loginPage("/login")
+                                .failureUrl("/login?error=true"))
+
+
+                     .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+        )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+
+
 
         return http.build();
     }

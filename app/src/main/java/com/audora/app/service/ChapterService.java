@@ -29,19 +29,22 @@ public class ChapterService {
             System.out.println("The chapters are : " + chapter);
             Chapter newChapter = new Chapter();
             newChapter.setBooks(books);
-
-            System.out.println("Attempting to upload chapter audio file: {} " + chapter.getAudioFile().getOriginalFilename());
-            System.out.println("File details - Size: {} ContentType: {} " +
-                    chapter.getAudioFile().getSize() + " " +
-                    chapter.getAudioFile().getContentType());
             newChapter.setDuration(chapter.getDuration());
-
-
-            String audioFileUrl = s3Service.uploadFile(chapter.getAudioFile());
-            System.out.println("Successfully uploaded file to: {} " + audioFileUrl);
-
-            newChapter.setAudioFileKey(audioFileUrl);
             newChapter.setTitle(chapter.getTitle());
+
+            if(chapter.getAudioFile() != null) {
+
+                System.out.println("Attempting to upload chapter audio file: {} " + chapter.getAudioFile().getOriginalFilename());
+                System.out.println("File details - Size: {} ContentType: {} " +
+                        chapter.getAudioFile().getSize() + " " +
+                        chapter.getAudioFile().getContentType());
+
+
+                String audioFileUrl = s3Service.uploadFile(chapter.getAudioFile());
+                System.out.println("Successfully uploaded file to: {} " + audioFileUrl);
+
+                newChapter.setAudioFileKey(audioFileUrl);
+            }
             chapter1.add(newChapter);
             chapterRepo.save(newChapter);
         }

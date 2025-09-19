@@ -3,9 +3,11 @@ package com.audora.app.controller;
 
 import com.audora.app.dto.UserLogin;
 import com.audora.app.dto.UserRegistration;
+import com.audora.app.model.Authors;
 import com.audora.app.model.Books;
 import com.audora.app.model.Categories;
 import com.audora.app.model.Users;
+import com.audora.app.service.AuthorService;
 import com.audora.app.service.BooksService;
 import com.audora.app.service.JWTService;
 import com.audora.app.service.UsersService;
@@ -45,12 +47,17 @@ public class UserController {
     @Autowired
     private JWTService jwtService;
 
+    @Autowired
+    private SecurityUtils securityUtils;
+
     @Value("${upload.dir}")
     private String uploadDir;
 
     @Autowired
     private BooksService booksService;
 
+    @Autowired
+    private AuthorService authorService;
 
     @GetMapping("/login")
     public String loginPage(Model model){
@@ -118,9 +125,15 @@ public class UserController {
     public String login(@ModelAttribute UserLogin user, HttpSession session, HttpServletResponse httpServletResponse, RedirectAttributes redirectAttributes, Model model) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserEmail(), user.getUserPassword()));
 
+
         if (authentication.isAuthenticated()) {
-            String key = jwtService.generateToken(user.getUserEmail());
-            jwtService.generateToken(user.getUserEmail());
+            Users existingUser = usersService.getUser(user.getUserEmail());
+            List<String> roles = existingUser.getRole()
+                    .stream()
+                    .map(r->r.getRoles().name())
+                    .toList();
+
+            String key = jwtService.generateToken(user.getUserEmail(),roles);
 
             // 3️⃣ Clear any old JWT cookie
             Cookie clearCookie = new Cookie("jwtToken", null);
@@ -137,7 +150,11 @@ public class UserController {
                 cookie.setMaxAge(60 * 30);
                 httpServletResponse.addCookie(cookie);
                 redirectAttributes.addFlashAttribute("success", "Login successful!");
-                return "redirect:/user/home";
+                if (roles.contains("ROLE_ADMIN")) {
+                    return "redirect:/admin/home";
+                } else {
+                    return "redirect:/user/home";
+                }
 
             } else {
                 redirectAttributes.addFlashAttribute("error", "Invalid Key");
@@ -166,13 +183,20 @@ public class UserController {
     public String getHomePage( Model model){
         String userName = SecurityUtils.getUserEmail();
 
+
         List<Books> books = booksService.getAllBooks();
         List<Categories> categories = booksService.getCategory();
         Users user1 = usersService.getUser(userName);
+
+        List<Authors> authors = authorService.getAuthors();
+        boolean isAdmin = securityUtils.isAdmin();
+
         System.out.println("From Home page : "+ user1);
         model.addAttribute("categories",categories);
         model.addAttribute("users",user1);
         model.addAttribute("books",books);
+        model.addAttribute("isAdmin",isAdmin);
+        model.addAttribute("authors",authors);
 
         return "user/home";
     }
@@ -181,7 +205,8 @@ public class UserController {
     public String getProfilePage(Model model){
         String userName = SecurityUtils.getUserEmail();
         Users user1 = usersService.getUser(userName);
-
+        boolean isAdmin = securityUtils.isAdmin();
+        model.addAttribute("isAdmin",isAdmin);
         model.addAttribute("users",user1);
 
 

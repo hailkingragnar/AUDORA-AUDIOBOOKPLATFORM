@@ -1,7 +1,7 @@
 package com.audora.app.enumpackage;
 
 public enum RoleType {
-    USER,
-    ADMIN,
-    MODERATOR
+    ROLE_USER,
+    ROLE_ADMIN,
+    ROLE_MODERATOR
 }

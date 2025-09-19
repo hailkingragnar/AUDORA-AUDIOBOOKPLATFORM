@@ -1,277 +1,290 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // =============================================
-  // PROFILE DROPDOWN FUNCTIONALITY
-  // =============================================
-  const profileDropdownButton = document.getElementById('profileDropdownButton');
-  const profileDropdownMenu = document.getElementById('profileDropdownMenu');
-
-  if (profileDropdownButton && profileDropdownMenu) {
-    profileDropdownButton.addEventListener('click', function(e) {
-      e.stopPropagation();
-      profileDropdownMenu.classList.toggle('opacity-100');
-      profileDropdownMenu.classList.toggle('invisible');
-      profileDropdownMenu.classList.toggle('scale-95');
-    });
-
-    // Close when clicking outside
-    document.addEventListener('click', function() {
-      profileDropdownMenu.classList.add('opacity-0', 'invisible', 'scale-95');
-    });
-
-    // Prevent dropdown from closing when clicking inside
-    profileDropdownMenu.addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
-  }
-
-  // =============================================
-  // AUDIO PLAYER CORE FUNCTIONALITY
-  // =============================================
-  const audioElement = document.getElementById('audio-element');
-  const bottomPlayer = document.getElementById('bottom-player');
-
-  if (audioElement && bottomPlayer) {
-    // Initialize player state
-    let isPlaying = false;
-    let currentChapterId = null;
-
-    // Player UI Elements
-    const playPauseBtn = document.getElementById('play-pause');
-    const coverPlayBtn = document.getElementById('cover-play-button');
-    const mainPlayBtn = document.getElementById('main-play-button');
-    const progressBar = document.getElementById('progress-bar');
-    const currentTimeEl = document.getElementById('current-time');
-    const durationEl = document.getElementById('duration');
-    const volumeControl = document.getElementById('volume-control');
-    const volumeButton = document.getElementById('volume-button');
-
-    // Set up bottom player styles
-    bottomPlayer.style.position = 'fixed';
-    bottomPlayer.style.bottom = '0';
-    bottomPlayer.style.left = '0';
-    bottomPlayer.style.right = '0';
-    bottomPlayer.style.backgroundColor = '#fff';
-    bottomPlayer.style.padding = '10px';
-    bottomPlayer.style.boxShadow = '0 -2px 10px rgba(0,0,0,0.2)';
-    bottomPlayer.style.zIndex = '1000';
-    bottomPlayer.style.display = 'none';
+    console.log('DOM loaded - script executing'); // Debug log
 
     // =============================================
-    // PLAYER CONTROL FUNCTIONS
+    // PROFILE DROPDOWN FUNCTIONALITY
     // =============================================
+    const profileDropdownButton = document.getElementById('profileDropdownButton');
+    const profileDropdownMenu = document.getElementById('profileDropdownMenu');
 
-    /**
-     * Toggle between play and pause states
-     */
-    async function togglePlayPause() {
-      try {
-        if (audioElement.paused) {
-          await audioElement.play();
-          updatePlayPauseButtons(true);
-          bottomPlayer.style.display = 'flex';
-          isPlaying = true;
-        } else {
-          audioElement.pause();
-          updatePlayPauseButtons(false);
-          isPlaying = false;
+    // =============================================
+    // TAB FUNCTIONALITY
+    // =============================================
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    if (tabButtons.length > 0 && tabPanels.length > 0) {
+        console.log('Tab elements found'); // Debug log
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+                console.log('Tab clicked:', targetTab); // Debug log
+
+                // Update button states
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('border-blue-500', 'text-white');
+                    btn.classList.add('border-transparent', 'text-gray-400');
+                });
+                button.classList.add('border-blue-500', 'text-white');
+                button.classList.remove('border-transparent', 'text-gray-400');
+
+                // Show/hide tab panels
+                tabPanels.forEach(panel => {
+                    panel.classList.add('hidden');
+                    panel.classList.remove('active');
+                });
+
+                const targetPanel = document.getElementById(`${targetTab}-tab`);
+                if (targetPanel) {
+                    targetPanel.classList.remove('hidden');
+                    targetPanel.classList.add('active');
+                }
+            });
+        });
+    } else {
+        console.log('Tab elements not found'); // Debug log
+    }
+
+    // =============================================
+    // PROFILE DROPDOWN
+    // =============================================
+    if (profileDropdownButton && profileDropdownMenu) {
+        console.log('Profile dropdown elements found'); // Debug log
+        profileDropdownButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            profileDropdownMenu.classList.toggle('opacity-100');
+            profileDropdownMenu.classList.toggle('invisible');
+            profileDropdownMenu.classList.toggle('scale-95');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', function() {
+            profileDropdownMenu.classList.add('opacity-0', 'invisible', 'scale-95');
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        profileDropdownMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    } else {
+        console.log('Profile dropdown elements not found'); // Debug log
+    }
+
+    // =============================================
+    // AUDIO PLAYER FUNCTIONALITY
+    // =============================================
+    const audioElement = document.getElementById('audio-element');
+    const bottomPlayer = document.getElementById('bottom-player');
+
+    if (audioElement && bottomPlayer) {
+        console.log('Audio player elements found'); // Debug log
+
+        // Initialize player state
+        let isPlaying = false;
+        let currentChapterId = null;
+
+        // Player UI Elements with null checks
+        const playPauseBtn = document.getElementById('play-pause');
+        const coverPlayBtn = document.getElementById('cover-play-button');
+        const mainPlayBtn = document.getElementById('main-play-button');
+        const progressBar = document.getElementById('progress-bar');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const volumeControl = document.getElementById('volume-control');
+        const volumeButton = document.getElementById('volume-button');
+
+        // Set up bottom player styles
+        bottomPlayer.style.position = 'fixed';
+        bottomPlayer.style.bottom = '0';
+        bottomPlayer.style.left = '0';
+        bottomPlayer.style.right = '0';
+        bottomPlayer.style.backgroundColor = '#fff';
+        bottomPlayer.style.padding = '10px';
+        bottomPlayer.style.boxShadow = '0 -2px 10px rgba(0,0,0,0.2)';
+        bottomPlayer.style.zIndex = '1000';
+        bottomPlayer.style.display = 'none';
+
+        // =============================================
+        // PLAYER CONTROL FUNCTIONS
+        // =============================================
+        async function togglePlayPause() {
+            try {
+                if (audioElement.paused) {
+                    await audioElement.play();
+                    updatePlayPauseButtons(true);
+                    bottomPlayer.style.display = 'flex';
+                    isPlaying = true;
+                } else {
+                    audioElement.pause();
+                    updatePlayPauseButtons(false);
+                    isPlaying = false;
+                }
+            } catch (error) {
+                console.error('Playback failed:', error);
+            }
         }
-      } catch (error) {
-        console.error('Playback failed:', error);
-      }
-    }
 
-    /**
-     * Update all play/pause buttons in the UI
-     * @param {boolean} playing - Whether audio is currently playing
-     */
-    function updatePlayPauseButtons(playing) {
-      const icon = playing ? 'fa-pause' : 'fa-play';
-      if (playPauseBtn) playPauseBtn.innerHTML = `<i class="fas ${icon}"></i>`;
-      if (coverPlayBtn) coverPlayBtn.innerHTML = `<i class="fas ${icon}"></i>`;
-      if (mainPlayBtn) mainPlayBtn.innerHTML = `<i class="fas ${icon} mr-2"></i> ${playing ? 'Pause' : 'Play'}`;
-    }
-
-    /**
-     * Format seconds into MM:SS display format
-     * @param {number} seconds - Time in seconds
-     * @returns {string} Formatted time string
-     */
-    function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
-    }
-
-    /**
-     * Update volume icon based on current volume level
-     * @param {number} volume - Current volume level (0-1)
-     */
-    function updateVolumeIcon(volume) {
-      const icon = volumeButton.querySelector('i');
-      if (volume === 0) {
-        icon.className = 'fas fa-volume-mute';
-      } else if (volume < 0.5) {
-        icon.className = 'fas fa-volume-down';
-      } else {
-        icon.className = 'fas fa-volume-up';
-      }
-    }
-
-    /**
-     * Load and play a specific chapter
-     * @param {string} chapterId - ID of the chapter to play
-     * @param {string} audioSrc - URL of the audio file
-     */
-    async function playChapter(chapterId, audioSrc) {
-      try {
-        if (audioElement.src !== audioSrc) {
-          audioElement.src = audioSrc;
-          audioElement.load();
+        function updatePlayPauseButtons(playing) {
+            const icon = playing ? 'fa-pause' : 'fa-play';
+            if (playPauseBtn) playPauseBtn.innerHTML = `<i class="fas ${icon}"></i>`;
+            if (coverPlayBtn) coverPlayBtn.innerHTML = `<i class="fas ${icon}"></i>`;
+            if (mainPlayBtn) mainPlayBtn.innerHTML = `<i class="fas ${icon} mr-2"></i> ${playing ? 'Pause' : 'Play'}`;
         }
-        
-        currentChapterId = chapterId;
-        updatePlayingChapter(chapterId);
-        await togglePlayPause();
-      } catch (error) {
-        console.error('Error loading chapter:', error);
-      }
-    }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function updateVolumeIcon(volume) {
+            if (volumeButton) {
+                const icon = volumeButton.querySelector('i');
+                if (volume === 0) {
+                    icon.className = 'fas fa-volume-mute';
+                } else if (volume < 0.5) {
+                    icon.className = 'fas fa-volume-down';
+                } else {
+                    icon.className = 'fas fa-volume-up';
+                }
+            }
+        }
+
+        async function playChapter(chapterId, audioSrc) {
+            try {
+                if (audioElement.src !== audioSrc) {
+                    audioElement.src = audioSrc;
+                    audioElement.load();
+                }
+
+                currentChapterId = chapterId;
+                updatePlayingChapter(chapterId);
+                await togglePlayPause();
+            } catch (error) {
+                console.error('Error loading chapter:', error);
+            }
+        }
+
+        // =============================================
+        // EVENT LISTENERS
+        // =============================================
+        if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
+        if (coverPlayBtn) coverPlayBtn.addEventListener('click', togglePlayPause);
+        if (mainPlayBtn) mainPlayBtn.addEventListener('click', togglePlayPause);
+
+        audioElement.addEventListener('timeupdate', function() {
+            const currentTime = audioElement.currentTime;
+            const duration = audioElement.duration || 1;
+
+            if (progressBar) {
+                const progressPercent = (currentTime / duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+            }
+
+            if (currentTimeEl) currentTimeEl.textContent = formatTime(currentTime);
+            if (durationEl && duration && !isNaN(duration)) {
+                durationEl.textContent = formatTime(duration);
+            }
+        });
+
+        const playerProgressEl = document.querySelector('.player-progress');
+        if (playerProgressEl) {
+            playerProgressEl.addEventListener('click', function(e) {
+                const progressBarWidth = this.offsetWidth;
+                const clickPosition = e.offsetX;
+                const duration = audioElement.duration;
+                audioElement.currentTime = (clickPosition / progressBarWidth) * duration;
+            });
+        }
+
+        if (volumeControl) {
+            volumeControl.addEventListener('input', function() {
+                audioElement.volume = this.value;
+                updateVolumeIcon(this.value);
+            });
+        }
+
+        if (volumeButton) {
+            volumeButton.addEventListener('click', function() {
+                if (audioElement.volume > 0) {
+                    audioElement.volume = 0;
+                    if (volumeControl) volumeControl.value = 0;
+                    updateVolumeIcon(0);
+                } else {
+                    audioElement.volume = 1;
+                    if (volumeControl) volumeControl.value = 1;
+                    updateVolumeIcon(1);
+                }
+            });
+        }
+
+        const rewindBtn = document.getElementById('rewind-10');
+        const forwardBtn = document.getElementById('forward-10');
+
+        if (rewindBtn) {
+            rewindBtn.addEventListener('click', function() {
+                audioElement.currentTime = Math.max(0, audioElement.currentTime - 10);
+            });
+        }
+
+        if (forwardBtn) {
+            forwardBtn.addEventListener('click', function() {
+                audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 10);
+            });
+        }
+
+        audioElement.addEventListener('loadedmetadata', function() {
+            if (durationEl) durationEl.textContent = formatTime(audioElement.duration);
+        });
+
+        audioElement.addEventListener('ended', function() {
+            updatePlayPauseButtons(false);
+            isPlaying = false;
+        });
+
+    } else {
+        console.log('Audio player elements not found'); // Debug log
+    } // <-- This closing brace was missing in your original code
 
     // =============================================
-    // EVENT LISTENERS FOR PLAYER CONTROLS
+    // CHAPTER NAVIGATION FUNCTIONALITY
     // =============================================
+    function updatePlayingChapter(chapterId) {
+        document.querySelectorAll('.episode-button i').forEach(icon => {
+            icon.classList.remove('fa-pause', 'text-blue-400');
+            icon.classList.add('fa-play', 'text-white');
+        });
 
-    // Play/Pause buttons
-    playPauseBtn?.addEventListener('click', togglePlayPause);
-    coverPlayBtn?.addEventListener('click', togglePlayPause);
-    mainPlayBtn?.addEventListener('click', togglePlayPause);
-
-    // Progress bar updates
-    audioElement.addEventListener('timeupdate', function() {
-      const currentTime = audioElement.currentTime;
-      const duration = audioElement.duration || 1;
-
-      // Update progress bar width
-      const progressPercent = (currentTime / duration) * 100;
-      progressBar.style.width = `${progressPercent}%`;
-
-      // Update time displays
-      currentTimeEl.textContent = formatTime(currentTime);
-      if (duration && !isNaN(duration)) {
-        durationEl.textContent = formatTime(duration);
-      }
-    });
-
-    // Click on progress bar to seek
-    document.querySelector('.player-progress')?.addEventListener('click', function(e) {
-      const progressBarWidth = this.offsetWidth;
-      const clickPosition = e.offsetX;
-      const duration = audioElement.duration;
-      audioElement.currentTime = (clickPosition / progressBarWidth) * duration;
-    });
-
-    // Volume control
-    volumeControl?.addEventListener('input', function() {
-      audioElement.volume = this.value;
-      updateVolumeIcon(this.value);
-    });
-
-    // Toggle mute
-    volumeButton?.addEventListener('click', function() {
-      if (audioElement.volume > 0) {
-        audioElement.volume = 0;
-        volumeControl.value = 0;
-        updateVolumeIcon(0);
-      } else {
-        audioElement.volume = 1;
-        volumeControl.value = 1;
-        updateVolumeIcon(1);
-      }
-    });
-
-    // Skip forward/backward
-    document.getElementById('rewind-10')?.addEventListener('click', function() {
-      audioElement.currentTime = Math.max(0, audioElement.currentTime - 10);
-    });
-
-    document.getElementById('forward-10')?.addEventListener('click', function() {
-      audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 10);
-    });
-
-    // Initialize duration when metadata is loaded
-    audioElement.addEventListener('loadedmetadata', function() {
-      durationEl.textContent = formatTime(audioElement.duration);
-    });
-
-    // Handle audio ending
-    audioElement.addEventListener('ended', function() {
-      updatePlayPauseButtons(false);
-      isPlaying = false;
-    });
-  }
-
-  // =============================================
-  // CHAPTER NAVIGATION FUNCTIONALITY
-  // =============================================
-
-  /**
-   * Update the currently playing chapter indicator in the UI
-   * @param {string} chapterId - ID of the chapter to highlight
-   */
-  function updatePlayingChapter(chapterId) {
-    // Reset all buttons
-    document.querySelectorAll('.episode-button i').forEach(icon => {
-      icon.classList.remove('fa-pause', 'text-blue-400');
-      icon.classList.add('fa-play', 'text-white');
-    });
-
-    // Set current playing chapter
-    if (chapterId) {
-      const currentIcon = document.querySelector(`.episode-card[data-chapter-id="${chapterId}"] .episode-button i`);
-      if (currentIcon) {
-        currentIcon.classList.remove('fa-play', 'text-white');
-        currentIcon.classList.add('fa-pause', 'text-blue-400');
-      }
-    }
-  }
-
-  // Handle chapter clicks with event delegation
-  document.addEventListener('click', function(e) {
-    const card = e.target.closest('.episode-card');
-    if (card) {
-      const chapterId = card.getAttribute('data-chapter-id');
-      
-      // If clicking the play button or its icon
-      if (e.target.closest('.episode-button') || e.target.classList.contains('fas')) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // Get chapter details (you would need to implement this based on your data structure)
-        const chapterTitle = card.querySelector('h3').textContent;
-        const chapterAudioSrc = card.getAttribute('data-audio-src'); // You need to add this attribute
-        
-        // Play the chapter
-        if (audioElement && bottomPlayer) {
-          playChapter(chapterId, chapterAudioSrc);
-        } else {
-          updatePlayingChapter(chapterId);
-          // Handle chapter change without player (if needed)
+        if (chapterId) {
+            const currentIcon = document.querySelector(`.episode-card[data-chapter-id="${chapterId}"] .episode-button i`);
+            if (currentIcon) {
+                currentIcon.classList.remove('fa-play', 'text-white');
+                currentIcon.classList.add('fa-pause', 'text-blue-400');
+            }
         }
-      }
-      // Otherwise, the link will follow normally to the chapter page
     }
-  });
 
-  // =============================================
-  // DYNAMIC BACKGROUND COLOR (for cover art)
-  // =============================================
-  const bgImage = document.getElementById('bg-image-source');
-  const coverBackground = document.getElementById('cover-background');
+    // Handle chapter clicks
+    document.addEventListener('click', function(e) {
+        const card = e.target.closest('.episode-card');
+        if (card) {
+            const chapterId = card.getAttribute('data-chapter-id');
 
-  bgImage.onload = function() {
-    // In a real implementation, use a color extraction library here
-    coverBackground.style.background = 'linear-gradient(to bottom, #1e3a8a, #111827)';
-  };
+            if (e.target.closest('.episode-button') || e.target.classList.contains('fas')) {
+                e.preventDefault();
+                e.stopPropagation();
 
-  if (bgImage.complete) bgImage.onload();
+                const chapterTitle = card.querySelector('h3').textContent;
+                const chapterAudioSrc = card.getAttribute('data-audio-src');
+
+                if (audioElement && bottomPlayer) {
+                    playChapter(chapterId, chapterAudioSrc);
+                } else {
+                    updatePlayingChapter(chapterId);
+                }
+            }
+        }
+    });
+
+    console.log('Script initialization complete'); // Debug log
 });

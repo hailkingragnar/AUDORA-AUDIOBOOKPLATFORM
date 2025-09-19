@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="dark">
+<head th:replace="~{admin/home :: head('Add Authors')}"></head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+
+<th:block th:replace="~{admin/home :: adminNavbar}"></th:block>
+
+<div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <!-- Form Card -->
+    <div class="bg-gray-800 rounded-xl shadow-xl overflow-hidden border border-gray-700">
+        <!-- Form Header -->
+        <div class="px-8 py-6 bg-gray-900 border-b border-gray-700">
+            <h2 class="text-2xl font-bold text-indigo-400">
+                <span th:if="${author.id == null}">Add New Author</span>
+                <span th:if="${author.id != null}">Edit Author</span>
+            </h2>
+            <p class="text-gray-400 mt-1">Complete all required fields</p>
+        </div>
+
+        <!-- Main Form -->
+        <form th:action="@{/admin/addauthor}" th:object="${author}" method="post" enctype="multipart/form-data" class="p-8">
+            <!-- Basic Info Section -->
+            <div class="mb-10">
+                <h3 class="text-lg font-medium text-indigo-300 mb-4 pb-2 border-b border-gray-700">
+                    <i class="fas fa-info-circle mr-2"></i>Basic Information
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Name -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Full Name *</label>
+                        <input type="text" th:field="*{name}" required
+                               class="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-4 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-red-400" th:if="${#fields.hasErrors('name')}"
+                           th:errors="*{name}"></p>
+                    </div>
+
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Email *</label>
+                        <input type="text" th:field="*{email}" required
+                               class="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-4 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="mt-1 text-xs text-red-400" th:if="${#fields.hasErrors('email')}"
+                           th:errors="*{email}"></p>
+                    </div>
+
+
+                    <!-- Pen Name -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Pen Name</label>
+                        <input type="text" th:field="*{penName}"
+                               class="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-4 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bio Section -->
+            <div class="mb-10">
+                <h3 class="text-lg font-medium text-indigo-300 mb-4 pb-2 border-b border-gray-700">
+                    <i class="fas fa-book-open mr-2"></i>Biography
+                </h3>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Author Bio *</label>
+                    <textarea th:field="*{bio}" rows="5" required
+                              class="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-4 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    <p class="mt-1 text-xs text-gray-400">Minimum 100 characters</p>
+                </div>
+            </div>
+
+            <!-- Media Section -->
+            <div class="mb-10">
+                <h3 class="text-lg font-medium text-indigo-300 mb-4 pb-2 border-b border-gray-700">
+                    <i class="fas fa-image mr-2"></i>Profile Media
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Image Upload with Preview -->
+                    <!-- Image Upload Preview Component -->
+                    <!-- Author Profile Image Upload -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Profile Image *</label>
+
+                        <!-- Upload Area -->
+                        <div id="authorUploadArea" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-lg bg-gray-700 hover:bg-gray-600 transition cursor-pointer">
+                            <div class="space-y-1 text-center">
+                                <div class="flex justify-center text-sm text-gray-400">
+                                    <label class="relative cursor-pointer rounded-md font-medium text-indigo-400 hover:text-indigo-300">
+                                        <span>Upload a file</span>
+                                        <input id="authorImageUpload" name="image" type="file" class="sr-only" accept="image/jpeg, image/png, image/webp">
+                                    </label>
+                                    <p class="pl-1">or drag and drop</p>
+                                </div>
+                                <p class="text-xs text-gray-500">PNG, JPG, WEBP up to 2MB</p>
+                            </div>
+                        </div>
+
+                        <!-- Preview Area -->
+                        <div id="authorPreviewContainer" class="hidden mt-2">
+                            <div class="relative inline-block">
+                                <img id="authorImagePreview" class="h-40 w-40 rounded-lg object-cover border border-gray-600" src="" alt="Author preview">
+                                <button id="removeAuthorImage" type="button" class="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <p id="authorImageFilename" class="mt-1 text-xs text-gray-400 truncate"></p>
+                        </div>
+
+                        <!-- Error Message -->
+                        <p id="authorFileError" class="mt-1 text-sm text-red-400 hidden"></p>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-700">
+                <a th:href="@{/admin/authors}"
+                   class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition flex items-center">
+                    <i class="fas fa-times mr-2"></i> Cancel
+                </a>
+                <button type="submit"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition flex items-center">
+                    <i class="fas fa-save mr-2"></i> Save Author
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block th:replace="~{admin/home :: adminFooter}"></th:block>
+<script src="/js/adminScript.js"></script>
+
+
+</body>
+</html>

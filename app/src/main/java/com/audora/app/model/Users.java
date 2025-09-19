@@ -4,11 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -22,9 +20,18 @@ public class Users {
     private String email;
     private String password;
     private String profilePicture;
-    private String subscription;
-    private Date membershipStartDate;
-    private Date membershipEndDate;
+
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "userId='" + userId + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", profilePicture='" + profilePicture + '\'' +
+                '}';
+    }
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -33,4 +40,10 @@ public class Users {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<UserRoles> role = new HashSet<>();
+
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reviews> reviews;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Subscriptions> subscriptions;
 }

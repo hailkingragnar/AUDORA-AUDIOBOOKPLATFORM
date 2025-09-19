@@ -12,10 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChaptersDTO {
+    private String id;
     private String title;
     private String duration;
     private MultipartFile audioFile;
     private Books books;
+    private String audioFileUrl;
 
 
 }

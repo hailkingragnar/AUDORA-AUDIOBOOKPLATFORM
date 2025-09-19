@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BooksDTO {
-
+    private String audiobookId;
     private String title;
     private String author;
     private String narrator;
@@ -50,7 +50,29 @@ public class BooksDTO {
                 '}';
     }
 
+    public BooksDTO(String audiobookId,String title, String author, String narrator, String duration, String language, String genre, String description, Date releaseDate, String isbn, String fileFormat, Double price, String availability, List<String> categoryNames, String imageUrl,List<ChaptersDTO> chapters) {
+       this.audiobookId=audiobookId;
+        this.title = title;
+        this.author = author;
+        this.narrator = narrator;
+        this.duration = duration;
+        this.language = language;
+        this.genre = genre;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.isbn = isbn;
+        this.fileFormat = fileFormat;
+        this.price = price;
+        this.availability = availability;
+        this.categoryNames = categoryNames;
+        this.chapters = chapters;
+        this.imageUrl = imageUrl;
+
+    }
+
     private MultipartFile image;
     private List<String> categoryNames;
     private List<ChaptersDTO> chapters;
+    private String imageUrl;
+    public List<String> audioUrl;
 }

@@ -1,0 +1,30 @@
+  .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .table-row:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+        .search-bar {
+            transition: all 0.3s ease;
+        }
+        .search-bar:focus-within {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .status-active { background-color: #dcfce7; color: #166534; }
+        .status-draft { background-color: #fef9c3; color: #854d0e; }
+        .status-archived { background-color: #fee2e2; color: #991b1b; }
+        .status-pending { background-color: #dbeafe; color: #1e40af; }
+

@@ -1,59 +1,38 @@
-<footer th:fragment="footer" class="mt-16">
-    <!-- Glass card without padding -->
-    <div class="glass-footer bg-white bg-opacity-5 backdrop-blur-lg border-t border-white border-opacity-10">
-        <div class="container mx-auto px-4 py-6">
-            <!-- Main content -->
-            <div class="flex flex-col items-center">
-                <!-- Logo and copyright -->
-                <div class="flex items-center space-x-3 mb-3">
-                    <span class="text-2xl text-blue-300">🎵</span>
-                    <span class="text-lg font-medium text-white">&copy; 2025 AUDORA</span>
-                    <span class="text-2xl text-purple-300">📖</span>
-                </div>
-
-                <!-- Tagline -->
-                <p class="text-sm text-gray-300 mb-4">Immerse yourself in stories, one chapter at a time</p>
-
-                <!-- Social links -->
-                <div class="flex space-x-5 mb-4">
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                        <i class="fab fa-twitter text-xl"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                        <i class="fab fa-instagram text-xl"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                        <i class="fab fa-facebook text-xl"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                        <i class="fab fa-youtube text-xl"></i>
-                    </a>
-                </div>
-
-                <!-- Legal links -->
-                <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs">
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Terms</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Cookies</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Accessibility</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a>
+<footer th:fragment="footer" class="bg-dark border-t border-gray-800 py-12">
+    <div class="container mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-xl font-bold text-primary mb-4">Audora</h3>
+                <p class="text-gray-400">Your premium audio experience. High quality sounds for everyone.</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Company</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition">About</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition">Careers</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition">Blog</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Support</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition">Help Center</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition">Contact Us</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary transition">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Connect</h4>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-primary transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-primary transition"><i class="fab fa-linkedin"></i></a>
                 </div>
             </div>
         </div>
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+            <p>© 2023 Audora. All rights reserved.</p>
+        </div>
     </div>
 </footer>
-
-<style>
-    .glass-footer {
-      background: rgba(15, 23, 42, 0.7); /* Dark blue base */
-      box-shadow:
-        0 4px 30px rgba(0, 0, 0, 0.1),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-    }
-
-    @media (max-width: 640px) {
-      .glass-footer {
-        border-radius: 0; /* Full width on mobile */
-      }
-    }
-</style>

@@ -1,5 +1,6 @@
 package com.audora.app.controller;
 
+import com.audora.app.dto.BooksDTO;
 import com.audora.app.model.Books;
 import com.audora.app.model.Categories;
 import com.audora.app.model.Chapter;
@@ -32,6 +33,9 @@ public class BooksController {
 
     @Autowired
     private ChapterService chapterService;
+
+    @Autowired
+    private SecurityUtils securityUtils;
 //    @ResponseBody
 //    @GetMapping("/saveBooks")
 //    public String saveBooks(){
@@ -59,6 +63,8 @@ public class BooksController {
         Users user1 = usersService.getUser(userName);
         Books book = booksService.findBookById(audiobookId);
         List<Chapter> chapter = chapterService.findChapterById(audiobookId);
+        boolean isAdmin = securityUtils.isAdmin();
+        model.addAttribute("isAdmin",isAdmin);
         model.addAttribute("book",book);
         model.addAttribute("users",user1);
         model.addAttribute("chapters",chapter);
@@ -75,7 +81,8 @@ public class BooksController {
           Books book = chapter.getBooks();
           List<Chapter> chapters = chapterService.findChapterById(book.getAudiobookId());
         System.out.println("All the chapters are : "+ chapters);
-
+        boolean isAdmin = securityUtils.isAdmin();
+        model.addAttribute("isAdmin",isAdmin);
 
         model.addAttribute("currentPlayingChapterId",id);
           model.addAttribute("book",book);
@@ -92,6 +99,8 @@ public class BooksController {
         Categories category = categoryService.getCategoryById(id);
         String userName = SecurityUtils.getUserEmail();
         Users user1 = usersService.getUser(userName);
+        boolean isAdmin = securityUtils.isAdmin();
+        model.addAttribute("isAdmin",isAdmin);
         List<Categories> categories = booksService.getCategory();
         model.addAttribute("categories",categories);
         model.addAttribute("users",user1);
@@ -99,6 +108,9 @@ public class BooksController {
 
         return "books/category";
     }
+
+
+
 
 
 }

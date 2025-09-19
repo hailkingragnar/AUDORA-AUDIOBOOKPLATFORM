@@ -14,6 +14,18 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 public class UserRoles {
+    public UserRoles(RoleType roleType) {
+
+    }
+
+    @Override
+    public String toString() {
+        return "UserRoles{" +
+                "roleId='" + roleId + '\'' +
+                ", roles=" + roles +
+                '}';
+    }
+
     @Id
     @Column(name = "role_id")
     private String roleId = UUID.randomUUID().toString();

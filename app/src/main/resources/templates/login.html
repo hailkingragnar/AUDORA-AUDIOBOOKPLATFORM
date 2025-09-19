@@ -165,7 +165,14 @@
             <img th:src="@{'/Images/AudoraLogoNew.png'}"
                  alt="Audora Logo"
                  class="h-12 w-12 mx-auto object-contain mb-2 icon-bounce"> <!-- Removed mr-2, added mx-auto -->
+
         </a>
+
+        <div th:if="${session.error}" class="alert alert-warning">
+            <span th:text="${session.error}"></span>
+            <a href="#" onclick="sessionStorage.removeItem('error')" class="close">×</a>
+        </div>
+
         <h2 class="text-lg font-bold gradient-text mb-1 floating">AUDORA</h2>
         <p class="text-gray-400 text-sm font-light">Welcome back to your audio journey</p>
     </div>
@@ -222,7 +229,7 @@
     <!-- Google Sign-In Button -->
     <button
             onclick="window.location.href='/oauth2/authorization/google'"
-            class="flex items-center justify-center w-full max-w-xs px-4 py-3 space-x-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+            class="flex items-center justify-center w-full px-4 py-3 space-x-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
     >
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
