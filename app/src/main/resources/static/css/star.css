@@ -1,0 +1,26 @@
+
+  .star {
+    color: #555; /* default unfilled color */
+    cursor: pointer;
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .star.filled {
+    color: #facc15; /* filled yellow */
+  }
+
+  /* Half star mask */
+  .star.half::before {
+    content: '\f005'; /* full star icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #facc15;
+    position: absolute;
+    width: 50%;
+    overflow: hidden;
+ }
+
+ .review-stars i {
+   transition: color 0.15s ease;
+ }

@@ -26,7 +26,7 @@ public class Reviews {
     }
 
     @Column(nullable = false)
-    private Integer rating;
+    private float rating;
 
     @Column(columnDefinition = "TEXT") // For longer text content
     private String comment;

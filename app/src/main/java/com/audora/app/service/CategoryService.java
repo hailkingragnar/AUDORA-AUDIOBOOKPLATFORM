@@ -32,4 +32,5 @@ public class CategoryService {
     public Categories getCategoryById(String id) {
         return categoriesRepo.findById(id).get();
     }
+
 }

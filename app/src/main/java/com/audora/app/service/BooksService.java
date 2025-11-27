@@ -3,18 +3,21 @@ package com.audora.app.service;
 import com.audora.app.dto.BookSearchDTO;
 import com.audora.app.dto.BooksDTO;
 import com.audora.app.dto.ChaptersDTO;
-import com.audora.app.model.Books;
-import com.audora.app.model.Categories;
-import com.audora.app.model.Chapter;
+import com.audora.app.model.*;
 import com.audora.app.repo.BooksRepo;
 import com.audora.app.repo.CategoriesRepo;
+import com.audora.app.repo.SavedBookRepo;
+import com.audora.app.repo.UsersRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +27,12 @@ public class BooksService {
 
     @Autowired
     private S3Service s3Service;
+
+    @Autowired
+    private UsersRepo usersRepo;
+
+    @Autowired
+    private SavedBookRepo savedBookRepo;
 
     @Autowired
     private BooksRepo booksRepo;
@@ -216,5 +225,58 @@ public class BooksService {
             return false;
         }
     }
+
+    public List<Categories> getCategoriesById(String audiobookId) {
+        Optional<Books> books =  booksRepo.findById(audiobookId);
+        if(books.isPresent()){
+            return books.get().getCategoriesList();
+        } else {
+            throw new RuntimeException("Book is not found");
+        }
+    }
+
+    public Boolean checkBookByUserIdAndBookId(String userId, String bookId) {
+        return savedBookRepo.existsByBookIdAndUserId(userId,bookId);
+
+    }
+
+    @Modifying
+    @Transactional
+    public void removeBookFromSaved(String userId, String bookId) {
+        try{
+            savedBookRepo.removeBookFromSavedList(userId,bookId);
+        } catch (Exception e){
+            throw new RuntimeException("Book deletion failed");
+        }
+    }
+
+    @Transactional
+    public void saveBook(String userId, String bookId) {
+
+        // ✅ Prevent duplicate saves
+        boolean alreadySaved = checkBookByUserIdAndBookId(userId, bookId);
+        if (alreadySaved) {
+            throw new RuntimeException("Book already saved");
+        }
+
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Books book = booksRepo.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
+
+        SavedBooks savedBooks = new SavedBooks();
+        savedBooks.setUser(user);
+        savedBooks.setBooks(book);
+        savedBooks.setSavedAt(LocalDateTime.now());
+
+        savedBookRepo.save(savedBooks);
+    }
+
+
+    public List<SavedBooks> getSavedBooksByUserId(String userId) {
+        return savedBookRepo.findByUserUserId(userId); // returns empty list if nothing found
+    }
+
 
 }

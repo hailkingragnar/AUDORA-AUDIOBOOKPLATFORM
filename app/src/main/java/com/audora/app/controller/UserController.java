@@ -115,8 +115,10 @@ public class UserController {
     public String home(Model model){
         List<Books> books = booksService.getAllBooks();
         List<Categories> categories = booksService.getCategory();
+        List<Authors> authors = authorService.getAuthors();
         model.addAttribute("categories",categories);
         model.addAttribute("books",books);
+        model.addAttribute("authors",authors);
         return "index";
     }
 

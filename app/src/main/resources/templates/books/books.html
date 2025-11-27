@@ -1,29 +1,63 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: head('Audiobook Player')}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Smooth transitions for tabs */
+    .tab-panel {
+      animation: fadeIn 0.3s ease-in;
+    }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
+    /* Enhanced hover effects */
+    .episode-item:hover {
+      transform: translateX(8px);
+    }
+
+    .book-card:hover {
+      transform: translateY(-4px);
+    }
+
+    /* Glassmorphism for cards */
+    .glass-card {
+      background: rgba(31, 41, 55, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
 </head>
 <body class="bg-gray-900">
 
 <th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
 
 <!-- Dynamic Background Cover -->
-<div id="cover-background" class="h-96 w-full relative bg-gradient-to-b from-blue-900 to-gray-900">
+<div id="cover-background" class="h-100 w-full relative bg-gradient-to-b from-blue-900 to-gray-900">
   <div class="container mx-auto max-w-6xl h-full relative z-10">
     <div class="flex flex-col md:flex-row gap-8 h-full items-start pt-20 pb-12 px-4">
-      <!-- Book Cover (Square) with corrected positioning -->
-      <div class="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 flex-shrink-0 shadow-2xl mt-8">
+      <!-- Book Cover -->
+      <div class="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64
+            flex-shrink-0 mt-8
+            rounded-2xl
+            bg-white/5 backdrop-blur-sm
+            border border-white/10
+            shadow-[0px_4px_20px_rgba(0,0,0,0.6)]
+            overflow-hidden
+            transition-transform duration-300 hover:scale-105">
+
         <div class="relative group h-full">
           <img th:src="@{'/Images/Books/'+${book.image}}"
                alt="Book Cover"
-               class="w-full h-full object-contain aspect-[3/4]"
+               class="w-full h-full object-contain p-3"
                loading="lazy" decoding="async">
+
           <!-- Hover Play Button -->
-          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button id="cover-play-button" class="w-16 h-16 bg-blue-600 bg-opacity-90 rounded-full flex items-center justify-center hover:bg-blue-700 transform transition-transform hover:scale-105">
-              <i class="fas fa-play text-white text-2xl" id="cover-play-icon"></i>
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30">
+            <button id="cover-play-button" class="w-16 h-16 bg-blue-600 bg-opacity-90 rounded-full flex items-center justify-center hover:bg-blue-700 transform transition-transform hover:scale-110 shadow-lg">
+              <i class="fas fa-play text-white text-2xl ml-1" id="cover-play-icon"></i>
             </button>
           </div>
         </div>
@@ -31,49 +65,57 @@
 
       <!-- Book Info -->
       <div class="flex-1 text-white pb-8 mt-8">
-        <h1 th:text="${book.title}" class="text-3xl md:text-4xl lg:text-5xl font-bold mb-2"></h1>
-        <p class="text-lg md:text-xl text-gray-300 mb-6">By <span th:text="${book.author}">Author Name</span></p>
+        <h1 th:text="${book.title}" class="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 leading-tight"></h1>
+        <p class="text-lg md:text-xl text-gray-300 mb-6">By <span th:text="${book.author}" class="font-semibold">Author Name</span></p>
 
-        <!-- Meta Info -->
-        <div class="flex flex-wrap gap-4 mb-6">
-          <div class="flex items-center">
-            <i class="fas fa-clock mr-2 text-blue-300"></i>
+        <!-- Categories -->
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span th:each="category : ${categories}"
+                class="px-3 py-1 bg-blue-600/30 border border-blue-500/50 rounded-full text-sm backdrop-blur-sm">
+            <span th:text="${category.categoryName}">Category Name</span>
+          </span>
+        </div>
+
+        <!-- Meta Info with better spacing -->
+        <div class="grid grid-cols-2 md:flex md:flex-wrap gap-4 mb-8">
+          <div class="flex items-center bg-white/5 px-4 py-2 rounded-lg backdrop-blur-sm">
+            <i class="fas fa-clock mr-2 text-blue-400"></i>
             <span th:text="${book.duration}">8h 45m</span>
           </div>
-          <div class="flex items-center">
-            <i class="fas fa-language mr-2 text-blue-300"></i>
+          <div class="flex items-center bg-white/5 px-4 py-2 rounded-lg backdrop-blur-sm">
+            <i class="fas fa-language mr-2 text-blue-400"></i>
             <span th:text="${book.language}">English</span>
           </div>
-          <div class="flex items-center">
-            <i class="fas fa-eye mr-2 text-blue-300"></i>
+          <div class="flex items-center bg-white/5 px-4 py-2 rounded-lg backdrop-blur-sm">
+            <i class="fas fa-eye mr-2 text-blue-400"></i>
             <span>1.2M views</span>
           </div>
-          <div class="flex items-center">
+          <div class="flex items-center bg-white/5 px-4 py-2 rounded-lg backdrop-blur-sm">
             <i class="fas fa-star text-yellow-400 mr-2"></i>
-            <span>4.5</span>
+            <span th:text="${avgReviewCount}">4.5</span>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex gap-4">
-          <button id="main-play-button" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-full font-medium flex items-center">
+        <div class="flex flex-wrap gap-3">
+          <button id="main-play-button" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-full font-medium flex items-center shadow-lg transition-all hover:shadow-blue-500/50 hover:scale-105">
             <i class="fas fa-play mr-2"></i> Play Trailer
           </button>
-          <button class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-full font-medium flex items-center">
-            <i class="far fa-bookmark mr-2"></i> Save
-          </button>
-          <!-- Review Stars -->
-          <button class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-full font-medium flex items-center">
-            <i class="fa fa-star mr-2" ></i>Rate
-          </button>
-
-
-
-          <button class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-full font-medium flex items-center">
-            <i class="fa fa-share-alt mr-2"></i> Save
+          <button id="saveBookBtn"
+                  class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-full font-medium flex items-center backdrop-blur-sm transition-all hover:scale-105"
+                  data-book-id="${book.audiobookId}"
+                  data-saved="false">
+            <i class="far fa-bookmark mr-2" id="saveIcon"></i>
+            <span id="saveText">Save</span>
           </button>
 
-          <button class="bg-gray-800 hover:bg-gray-700 text-white w-10 h-10 rounded-full flex items-center justify-center">
+          <button id="rateBtn" class="bg-gray-800/80 hover:bg-gray-700 text-white px-6 py-3 rounded-full font-medium flex items-center backdrop-blur-sm transition-all hover:scale-105">
+            <i class="fa fa-star mr-2"></i> Rate
+          </button>
+          <button id="shareBtn" class="bg-gray-800/80 hover:bg-gray-700 text-white px-6 py-3 rounded-full font-medium flex items-center backdrop-blur-sm transition-all hover:scale-105">
+            <i class="fa fa-share-alt mr-2"></i> Share
+          </button>
+          <button class="bg-gray-800/80 hover:bg-gray-700 text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm transition-all hover:scale-105">
             <i class="fas fa-ellipsis-h"></i>
           </button>
         </div>
@@ -84,52 +126,77 @@
 
 <!-- Main Content -->
 <div class="container mx-auto max-w-6xl px-4 pb-32">
-  <!-- Description Section (no card) -->
-  <div class="mb-8 pt-8">
-    <h2 class="text-xl font-bold text-white mb-4">About</h2>
-    <p th:text="${book.description}" class="text-gray-300 leading-relaxed"></p>
+
+
+
+
+
+  <!-- Play Episode Button -->
+  <div class="mb-8 pt-6">
+    <button class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600
+                 py-4 rounded-2xl font-semibold shadow-lg transition-all hover:shadow-blue-500/30 hover:scale-[1.02]
+                 flex items-center justify-center text-white text-lg">
+      <i class="fas fa-play mr-3"></i>
+      Play chapter 1
+    </button>
   </div>
 
-  <!-- Divider -->
-  <div class="border-t border-gray-700 my-8"></div>
+
+
+
+  <!-- Description Section -->
+  <div class="mb-8 glass-card rounded-2xl p-6">
+    <h2 class="text-2xl font-bold text-white mb-4 flex items-center">
+      <i class="fas fa-book-open mr-3 text-blue-400"></i>
+      About
+    </h2>
+    <p th:text="${book.description}" class="text-gray-300 leading-relaxed text-base"></p>
+  </div>
+
+  <!-- Divider with gradient -->
+  <div class="h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent my-12"></div>
 
   <!-- Tabbed Menu Section -->
-  <div class="mb-8 pt-8">
+  <div class="mb-8">
     <!-- Tab Navigation -->
     <div class="border-b border-gray-700 mb-6">
-      <nav class="flex space-x-8" aria-label="Tabs">
-        <button class="tab-button py-4 px-1 border-b-2 font-medium text-sm text-white border-blue-500" data-tab="episodes">
-          Episodes
+      <nav class="flex space-x-8 overflow-x-auto" aria-label="Tabs">
+        <button class="tab-button py-4 px-1 border-b-2 font-semibold text-sm text-white border-blue-500 whitespace-nowrap transition-all" data-tab="episodes">
+          <i class="fas fa-list mr-2"></i>Episodes
         </button>
-        <button class="tab-button py-4 px-1 border-b-2 font-medium text-sm text-gray-400 border-transparent hover:text-white hover:border-gray-300" data-tab="reviews">
-          Reviews
+        <button class="tab-button py-4 px-1 border-b-2 font-semibold text-sm text-gray-400 border-transparent hover:text-white hover:border-gray-500 whitespace-nowrap transition-all" data-tab="reviews">
+          <i class="fas fa-comment-dots mr-2"></i>Reviews
         </button>
-        <button class="tab-button py-4 px-1 border-b-2 font-medium text-sm text-gray-400 border-transparent hover:text-white hover:border-gray-300" data-tab="author">
-          Author Details
+        <button class="tab-button py-4 px-1 border-b-2 font-semibold text-sm text-gray-400 border-transparent hover:text-white hover:border-gray-500 whitespace-nowrap transition-all" data-tab="author">
+          <i class="fas fa-user-circle mr-2"></i>Author
         </button>
-        <button class="tab-button py-4 px-1 border-b-2 font-medium text-sm text-gray-400 border-transparent hover:text-white hover:border-gray-300" data-tab="related">
-          Related Books
+        <button class="tab-button py-4 px-1 border-b-2 font-semibold text-sm text-gray-400 border-transparent hover:text-white hover:border-gray-500 whitespace-nowrap transition-all" data-tab="related">
+          <i class="fas fa-books mr-2"></i>Related
         </button>
       </nav>
     </div>
 
     <!-- Tab Content -->
     <div class="tab-content">
-      <!-- Episodes Tab (Active by default) -->
+      <!-- Episodes Tab -->
       <div id="episodes-tab" class="tab-panel active">
         <div class="space-y-3">
-          <div th:each="chapter : ${chapters}" class="bg-gray-800 hover:bg-gray-700 rounded-lg transition-all duration-200">
+          <div th:each="chapter, chapterStat : ${chapters}"
+               class="episode-item glass-card rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden">
             <a th:href="@{'/book/viewchapter/' + ${chapter.id}}">
-              <div class="flex items-center p-4">
-                <div class="w-10 h-10 flex-shrink-0 bg-gray-700 rounded-full flex items-center justify-center mr-4">
-                  <span class="text-gray-400" th:text="${chapterStat.count}">1</span>
+              <div class="flex items-center p-5">
+                <div class="w-12 h-12 flex-shrink-0 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center mr-4 shadow-lg">
+                  <span class="text-white font-bold" th:text="${chapterStat.count}">1</span>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 th:text="${chapter.title}" class="font-medium text-white truncate"></h3>
-                  <p class="text-sm text-gray-400" th:text="${chapter.duration}">45:30</p>
+                  <h3 th:text="${chapter.title}" class="font-semibold text-white truncate mb-1 text-lg"></h3>
+                  <p class="text-sm text-gray-400 flex items-center">
+                    <i class="far fa-clock mr-2"></i>
+                    <span th:text="${chapter.duration}">45:30</span>
+                  </p>
                 </div>
-                <button class="w-10 h-10 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center ml-4">
-                  <i class="fas fa-play text-white"></i>
+                <button class="w-12 h-12 bg-blue-600/20 hover:bg-blue-600 rounded-full flex items-center justify-center ml-4 transition-all hover:scale-110 group">
+                  <i class="fas fa-play text-blue-400 group-hover:text-white transition-colors ml-1"></i>
                 </button>
               </div>
             </a>
@@ -141,44 +208,76 @@
       <div id="reviews-tab" class="tab-panel hidden">
         <div class="space-y-6">
           <!-- Review Form -->
-          <div class="bg-gray-800 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Write a Review</h3>
-            <div class="review-stars mb-4">
-              <i class="fas fa-star star text-2xl" data-rating="1"></i>
-              <i class="fas fa-star star text-2xl" data-rating="2"></i>
-              <i class="fas fa-star star text-2xl" data-rating="3"></i>
-              <i class="fas fa-star star text-2xl" data-rating="4"></i>
-              <i class="fas fa-star star text-2xl" data-rating="5"></i>
+          <div class="glass-card rounded-2xl p-6 shadow-lg" id="review-section">
+            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+              <i class="fas fa-pen mr-3 text-blue-400"></i>
+              Write a Review
+            </h3>
+            <div class="review-stars flex space-x-2 mb-6 text-4xl text-gray-600 cursor-pointer" id="starRating">
+              <i class="fa-regular fa-star hover:text-yellow-400 transition-colors" data-value="1"></i>
+              <i class="fa-regular fa-star hover:text-yellow-400 transition-colors" data-value="2"></i>
+              <i class="fa-regular fa-star hover:text-yellow-400 transition-colors" data-value="3"></i>
+              <i class="fa-regular fa-star hover:text-yellow-400 transition-colors" data-value="4"></i>
+              <i class="fa-regular fa-star hover:text-yellow-400 transition-colors" data-value="5"></i>
             </div>
-            <textarea class="w-full bg-gray-700 text-white rounded-lg p-4 mb-4" rows="4" placeholder="Share your thoughts about this audiobook..."></textarea>
-            <button class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-medium">
+
+            <input type="hidden" id="ratingValue">
+            <textarea id="reviewText"
+                      class="w-full bg-gray-700/50 text-white rounded-xl p-4 mb-4 border border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                      rows="4"
+                      placeholder="Share your thoughts about this audiobook..."></textarea>
+
+            <button id="submitReviewBtn"
+                    class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-semibold shadow-lg transition-all hover:shadow-blue-500/50 hover:scale-105">
+              <i class="fas fa-paper-plane mr-2"></i>
               Submit Review
             </button>
           </div>
 
+          <input type="hidden" id="userId" th:value="${users.userId}">
+          <input type="hidden" id="bookId" th:value="${book.audiobookId}">
+
           <!-- Reviews List -->
           <div class="space-y-4">
-            <!-- Sample Review -->
-            <div class="bg-gray-800 rounded-lg p-6">
+            <div class="glass-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all" th:each="review : ${reviews}">
               <div class="flex items-start justify-between mb-4">
-                <div class="flex items-center">
-                  <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                    <span class="text-white font-semibold">JD</span>
+                <div class="flex items-center gap-4">
+                  <!-- User Avatar -->
+                  <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-lg">JD</span>
                   </div>
+
                   <div>
-                    <h4 class="font-semibold text-white">John Doe</h4>
-                    <div class="flex text-yellow-400 text-sm">
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
-                      <i class="fas fa-star"></i>
+                    <div class="flex items-center gap-2 mb-1">
+                      <span th:text="${review.userName}" class="text-white font-semibold">John Doe</span>
+                      <!-- Star Rating -->
+                      <div class="flex text-yellow-400 text-base" th:with="
+                        fullStars=${T(java.lang.Math).floor(review.rating).intValue()},
+                        halfStar=${review.rating % 1 >= 0.5 ? 1 : 0},
+                        emptyStars=${5 - T(java.lang.Math).floor(review.rating).intValue() - (review.rating % 1 >= 0.5 ? 1 : 0)}">
+
+                        <th:block th:if="${fullStars > 0}">
+                          <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, fullStars)}"></i>
+                        </th:block>
+                        <i class="fas fa-star-half-alt" th:if="${halfStar == 1}"></i>
+                        <th:block th:if="${emptyStars > 0}">
+                          <i class="far fa-star" th:each="i : ${#numbers.sequence(1, emptyStars)}"></i>
+                        </th:block>
+                      </div>
                     </div>
+                    <!-- Review Date -->
+                    <span th:text="${review.createdDate}" class="text-gray-400 text-sm flex items-center">
+                      <i class="far fa-calendar mr-1"></i>
+                      2 days ago
+                    </span>
                   </div>
                 </div>
-                <span class="text-gray-400 text-sm">2 days ago</span>
               </div>
-              <p class="text-gray-300">Absolutely loved this audiobook! The narration was superb and the story kept me engaged throughout my entire commute.</p>
+
+              <!-- Review Text -->
+              <p th:text="${review.review}" class="text-gray-300 leading-relaxed">
+                Absolutely loved this audiobook! The narration was superb.
+              </p>
             </div>
           </div>
         </div>
@@ -186,18 +285,44 @@
 
       <!-- Author Details Tab -->
       <div id="author-tab" class="tab-panel hidden">
-        <div class="bg-gray-800 rounded-lg p-6">
-          <div class="flex items-start gap-6">
-            <img th:src="@{'/Images/Authors/' + ${book.authors?.image}}" th:alt="${book.authors?.name}" class="w-24 h-24 rounded-full object-cover">
+        <div class="glass-card rounded-2xl p-8 shadow-lg">
+          <div class="flex flex-col md:flex-row items-start gap-6">
+            <img th:src="@{'/Images/Authors/' + ${book.authors?.image}}"
+                 th:alt="${book.authors?.name}"
+                 class="w-32 h-32 rounded-2xl object-cover shadow-lg border-2 border-blue-500/30">
             <div class="flex-1">
-              <h3 class="text-xl font-bold text-white mb-2" th:text="${book.authors?.name}">Author Name</h3>
-              <p class="text-gray-300 mb-4">Bestselling author with over 20 published works in the fiction genre.</p>
-              <div class="flex flex-wrap gap-4 text-sm text-gray-400">
-                <span><i class="fas fa-book mr-2"></i> <span th:text="${book.authors.bookList.size()}">15</span> Books</span>
-                <span><i class="fas fa-star mr-2"></i> 4.8 Rating</span>
-                <span><i class="fas fa-globe mr-2"></i> United States</span>
+              <h3 class="text-2xl font-bold text-white mb-2 flex items-center" th:text="${book.authors?.name}">
+                Author Name
+              </h3>
+              <p class="text-gray-300 mb-6 text-lg">Bestselling author with over 20 published works in the fiction genre.</p>
+
+              <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-gray-700/50 rounded-xl p-4 text-center">
+                  <div class="text-blue-400 text-2xl mb-1">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <div class="text-white font-bold text-xl">15</div>
+                  <div class="text-gray-400 text-sm">Books</div>
+                </div>
+                <div class="bg-gray-700/50 rounded-xl p-4 text-center">
+                  <div class="text-yellow-400 text-2xl mb-1">
+                    <i class="fas fa-star"></i>
+                  </div>
+                  <div class="text-white font-bold text-xl">4.8</div>
+                  <div class="text-gray-400 text-sm">Rating</div>
+                </div>
+                <div class="bg-gray-700/50 rounded-xl p-4 text-center">
+                  <div class="text-green-400 text-2xl mb-1">
+                    <i class="fas fa-globe"></i>
+                  </div>
+                  <div class="text-white font-bold text-sm">USA</div>
+                  <div class="text-gray-400 text-sm">Country</div>
+                </div>
               </div>
-              <p class="text-gray-300 mt-4" th:text="${book.authors?.bio}">Author biography goes here. This section contains information about the author's background, writing style, and other published works.</p>
+
+              <p class="text-gray-300 leading-relaxed" th:text="${book.authors?.bio}">
+                Author biography goes here. This section contains information about the author's background, writing style, and other published works.
+              </p>
             </div>
           </div>
         </div>
@@ -205,14 +330,21 @@
 
       <!-- Related Books Tab -->
       <div id="related-tab" class="tab-panel hidden">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           <!-- Sample Related Book -->
-          <div class="bg-gray-800 hover:bg-gray-700 rounded-lg overflow-hidden transition-all duration-200">
-            <img src="#" alt="Related Book" class="w-full aspect-square object-cover">
-            <div class="p-3">
-              <h3 class="font-medium text-white text-sm mb-1">Book Title</h3>
-              <p class="text-xs text-gray-400">Author Name</p>
-              <div class="flex items-center mt-2">
+          <div class="book-card glass-card rounded-xl overflow-hidden transition-all duration-300 shadow-lg hover:shadow-xl">
+            <div class="relative group">
+              <img src="#" alt="Related Book" class="w-full aspect-square object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                <button class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-500 transition-colors">
+                  <i class="fas fa-play mr-2"></i>Play
+                </button>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-semibold text-white text-sm mb-1 truncate">Book Title</h3>
+              <p class="text-xs text-gray-400 mb-2">Author Name</p>
+              <div class="flex items-center justify-between">
                 <div class="flex text-yellow-400 text-xs">
                   <i class="fas fa-star"></i>
                   <i class="fas fa-star"></i>
@@ -220,7 +352,7 @@
                   <i class="fas fa-star"></i>
                   <i class="fas fa-star-half-alt"></i>
                 </div>
-                <span class="text-gray-400 text-xs ml-1">4.5</span>
+                <span class="text-gray-300 text-xs font-semibold">4.5</span>
               </div>
             </div>
           </div>
@@ -228,46 +360,11 @@
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Episodes List -->
-  <div class="mb-12">
-    <h2 class="text-2xl font-bold text-white mb-6">Episodes</h2>
-    <div class="space-y-3">
-      <div th:each="chapter : ${chapters}" class="bg-gray-800 hover:bg-gray-700 rounded-lg transition-all duration-200">
-       <a th:href="@{'/book/viewchapter/' + ${chapter.id}}"> <div class="flex items-center p-4">
-          <div class="w-10 h-10 flex-shrink-0 bg-gray-700 rounded-full flex items-center justify-center mr-4">
-            <span class="text-gray-400" th:text="${chapterStat.count}">1</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h3 th:text="${chapter.title}" class="font-medium text-white truncate"></h3>
-            <p class="text-sm text-gray-400" th:text="${chapter.duration}">45:30</p>
-          </div>
-          <button class="w-10 h-10 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center ml-4">
-            <i class="fas fa-play text-white"></i>
-          </button>
-        </div> </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Divider -->
-  <div class="border-t border-gray-700 my-8"></div>
-
-  <!-- More Like This -->
-  <div class="mb-8">
-    <h2 class="text-2xl font-bold text-white mb-6">More Like This</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      <div class="bg-gray-800 hover:bg-gray-700 rounded-lg overflow-hidden transition-all duration-200">
-        <img src="#"
-             alt="Book Cover"
-             class="w-full aspect-square object-cover">
-        <div class="p-3">
-          <h3 class="font-medium text-white text-sm mb-1">Book Title</h3>
-          <p class="text-xs text-gray-400">Author Name</p>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- Footer - FULL WIDTH -->
+<div class="w-full">
+  <th:block th:replace="~{fragments/footer :: footer}"></th:block>
 </div>
 
 <!-- Audio Player -->
@@ -275,46 +372,93 @@
   <source src="https://audoranepaliaudios.s3.ap-south-1.amazonaws.com/audio1.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Bottom Player (initially hidden) -->
-<div class="bottom-player hidden" id="bottom-player">
+<!-- Bottom Player -->
+<div class="bottom-player hidden fixed bottom-0 left-0 right-0 bg-white shadow-2xl z-50" id="bottom-player">
   <div class="player-progress">
     <div id="progress-bar" class="player-progress-bar"></div>
   </div>
-  <div class="flex items-center w-full px-4 py-2">
+  <div class="flex items-center w-full px-4 py-3">
     <img id="player-book-cover" th:src="@{'/Images/Books/'+${book.image}}"
          alt="Book Cover"
-         class="w-12 h-12 object-cover rounded mr-3">
+         class="w-14 h-14 object-cover rounded-lg shadow-lg mr-4">
     <div class="flex-1 min-w-0">
-      <h3 id="player-book-title" th:text="${book.title}" class="font-medium text-gray-900 truncate"></h3>
-      <p id="player-episode-title" class="text-xs text-gray-600 truncate">Chapter 1: The Silent Patient</p>
+      <h3 id="player-book-title" th:text="${book.title}" class="font-semibold text-gray-900 truncate text-base"></h3>
+      <p id="player-episode-title" class="text-sm text-gray-600 truncate">Chapter 1: The Silent Patient</p>
     </div>
-    <div class="flex items-center space-x-4 mx-4">
-      <button id="rewind-10" class="text-gray-700 hover:text-blue-600">
-        <i class="fas fa-backward"></i> -10
+    <div class="flex items-center space-x-4 mx-6">
+      <button id="rewind-10" class="text-gray-700 hover:text-blue-600 transition-colors font-semibold">
+        <i class="fas fa-backward mr-1"></i>10s
       </button>
-      <button id="play-pause" class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700">
+      <button id="play-pause" class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 shadow-lg transition-all hover:scale-110">
         <i class="fas fa-pause"></i>
       </button>
-      <button id="forward-10" class="text-gray-700 hover:text-blue-600">
-        +10 <i class="fas fa-forward"></i>
+      <button id="forward-10" class="text-gray-700 hover:text-blue-600 transition-colors font-semibold">
+        10s<i class="fas fa-forward ml-1"></i>
       </button>
     </div>
     <div class="flex items-center space-x-2 mx-4">
-      <span id="current-time" class="text-sm text-gray-700">0:00</span>
+      <span id="current-time" class="text-sm text-gray-700 font-medium">0:00</span>
       <span class="text-sm text-gray-400">/</span>
-      <span id="duration" class="text-sm text-gray-700">12:45</span>
+      <span id="duration" class="text-sm text-gray-700 font-medium">12:45</span>
     </div>
     <div class="flex items-center ml-4">
-      <button id="volume-button" class="text-gray-700 mr-2">
+      <button id="volume-button" class="text-gray-700 hover:text-blue-600 mr-3 transition-colors">
         <i class="fas fa-volume-up"></i>
       </button>
-      <input id="volume-control" type="range" min="0" max="1" step="0.1" value="1" class="w-20">
+      <input id="volume-control" type="range" min="0" max="1" step="0.1" value="1" class="w-24">
     </div>
   </div>
 </div>
 
-<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+
+
+<!-- Share Modal -->
+<div id="shareModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+  <div class="bg-gray-900 rounded-2xl w-[90%] max-w-sm p-6 shadow-2xl">
+    <h3 class="text-white text-xl font-bold mb-4 text-center">Share this Audiobook</h3>
+
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- Copy Link -->
+      <button onclick="copyLink()"
+              class="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-xl">
+        <i class="fas fa-link"></i> Copy Link
+      </button>
+
+      <!-- WhatsApp -->
+      <a id="whatsappShare" target="_blank"
+         class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white p-3 rounded-xl">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </a>
+
+      <!-- Messenger -->
+      <a id="messengerShare" target="_blank"
+         class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-xl">
+        <i class="fab fa-facebook-messenger"></i> Messenger
+      </a>
+
+      <!-- Instagram -->
+      <button onclick="shareInstagram()"
+              class="flex items-center justify-center gap-2 bg-pink-600 hover:bg-pink-500 text-white p-3 rounded-xl">
+        <i class="fab fa-instagram"></i> Instagram
+      </button>
+
+    </div>
+
+    <button id="closeShare"
+            class="mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-xl">
+      Close
+    </button>
+  </div>
+</div>
+
+
+
 <th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+<script src="/js/star.js"></script>
+<script src="/js/savevideo.js"></script>
+<script src="/js/rate.js"></script>
+<script src="/js/share.js"></script>
 
 
 

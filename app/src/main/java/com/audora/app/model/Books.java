@@ -34,6 +34,8 @@ public class Books {
     private String availability;
     private String image;
 
+    private Long viewCount = 0L;
+
     @OneToMany(mappedBy = "books", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reviews> reviews;
 
