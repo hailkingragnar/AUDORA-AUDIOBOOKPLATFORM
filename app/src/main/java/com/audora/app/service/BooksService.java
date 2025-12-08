@@ -4,10 +4,7 @@ import com.audora.app.dto.BookSearchDTO;
 import com.audora.app.dto.BooksDTO;
 import com.audora.app.dto.ChaptersDTO;
 import com.audora.app.model.*;
-import com.audora.app.repo.BooksRepo;
-import com.audora.app.repo.CategoriesRepo;
-import com.audora.app.repo.SavedBookRepo;
-import com.audora.app.repo.UsersRepo;
+import com.audora.app.repo.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +33,9 @@ public class BooksService {
 
     @Autowired
     private BooksRepo booksRepo;
+
+    @Autowired
+    public FavoritesBooksRepo favoritesBooksRepo;
 
     @Autowired
     private CategoriesRepo categoriesRepo;
@@ -278,5 +278,51 @@ public class BooksService {
         return savedBookRepo.findByUserUserId(userId); // returns empty list if nothing found
     }
 
+
+    public List<Books> findBookByAuthorId(String id) {
+        return booksRepo.findByAuthor_Id(id);
+    }
+
+
+
+
+    public Boolean checkBookIsFavOrNot(String userId, String bookId) {
+        return favoritesBooksRepo.isFavOrNot(userId,bookId);
+    }
+
+    @Transactional
+    public void addBookToFav(String userId, String bookId) {
+        // ✅ Prevent duplicate saves
+        boolean alreadyAdded = checkBookIsFavOrNot(userId, bookId);
+        if (alreadyAdded) {
+            throw new RuntimeException("Book already saved");
+        }
+
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Books book = booksRepo.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
+
+        Favourites favourites = new Favourites();
+        favourites.setUser(user);
+        favourites.setBooks(book);
+        favourites.setLocalDateTime(LocalDateTime.now());
+        favoritesBooksRepo.save(favourites);
+    }
+
+    @Modifying
+    @Transactional
+    public void removeBookFromFav(String userId, String bookId) {
+        try{
+            favoritesBooksRepo.removeBookFromSavedList(userId,bookId);
+        } catch (Exception e){
+            throw new RuntimeException("Book deletion failed");
+        }
+    }
+
+    public List<Favourites> getFavBooksByUserId(String userId) {
+        return favoritesBooksRepo.findByUserUserId(userId); // returns empty list if nothing found
+    }
 
 }

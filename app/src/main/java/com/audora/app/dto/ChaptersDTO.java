@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ChaptersDTO {
     private String id;
     private String title;
-    private String duration;
+    private int duration;
     private MultipartFile audioFile;
     private Books books;
     private String audioFileUrl;

@@ -1,76 +1,297 @@
-<nav th:fragment="navbar" class="fixed w-full top-0 z-50 bg-[#0f172a] shadow-md">
-    <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center" th:object="${users}">
+<nav th:fragment="navbar" class="fixed w-full top-0 z-[9999] bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] backdrop-blur-lg border-b border-white/10 shadow-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3" th:object="${users}">
+        <div class="flex justify-between items-center">
 
-        <!-- Logo -->
-        <a th:href="@{/user/home}" class="flex items-center space-x-2">
-            <img th:src="@{'/Images/AudoraLogoNew.png'}" alt="Audora Logo" class="h-12 w-12 object-contain">
-            <h1 class="text-xl font-extrabold text-white">AUDORA</h1>
-        </a>
+            <!-- Logo Section -->
+            <a th:href="@{/user/home}" class="flex items-center space-x-3 group">
+                <div class="relative">
+                    <img th:src="@{'/Images/AudoraLogoNew.png'}"
+                         alt="Audora Logo"
+                         class="h-11 w-11 object-contain transform group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-purple-500/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <h1 class="text-2xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                    AUDORA
+                </h1>
+            </a>
 
-        <!-- Search Bar -->
-        <div class="hidden md:flex flex-1 max-w-md mx-6 relative">
-            <input type="text"
-                   id="searchInput"
-                   placeholder="Search audiobooks..."
-                   class="w-full py-2 px-4 rounded-full bg-gray-700 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                   autocomplete="off">
-            <button class="absolute right-3 top-2 text-gray-300 hover:text-white transition">🔍</button>
-            <div id="autocompleteResults" class="hidden absolute z-50 w-full mt-1 bg-gray-800 rounded-lg shadow-lg max-h-80 overflow-y-auto"></div>
-        </div>
+            <!-- Search Bar - Enhanced -->
+            <div class="hidden lg:flex flex-1 max-w-xl mx-8 relative">
+                <div class="relative w-full group">
+                    <input type="text"
+                           id="searchInput"
+                           placeholder="Search audiobooks, authors, categories..."
+                           class="w-full py-3 pl-12 pr-4 rounded-full bg-white/10 backdrop-blur-md text-white placeholder-gray-400 border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                           autocomplete="off">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">🔍</span>
 
-        <!-- Navigation Links -->
-        <div class="flex items-center space-x-6">
-
-            <a th:href="@{/user/home}" class="text-white font-medium hover:text-yellow-300 transition transform hover:scale-105">Home</a>
-            <a th:href="@{/user/library}" class="text-white font-medium hover:text-yellow-300 transition transform hover:scale-105">My Library</a>
-
-            <!-- Categories Dropdown -->
-            <div class="relative">
-                <button id="categoriesDropdownButton" class="flex items-center text-white hover:text-yellow-300 transition px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600">
-                    Categories <span class="ml-1">▼</span>
-                </button>
-                <div id="categoriesDropdown" class="absolute left-0 mt-2 w-64 bg-[#363636] rounded-lg shadow-lg hidden border border-gray-600">
-                    <div class="p-4">
-                        <h3 class="text-lg font-bold text-white mb-2">Browse by Category</h3>
-                        <div class="grid grid-cols-2 gap-2" th:each="category : ${categories}">
-                            <a th:href="@{'/category/books/' + ${category.id}}" class="px-3 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded transition">
-                                <span th:text="${category.categoryName}"></span>
-                            </a>
-                        </div>
-                        <a href="/categories" class="block mt-3 text-center text-purple-300 hover:text-purple-200 text-sm">View all categories →</a>
+                    <!-- Search Results Dropdown -->
+                    <div id="autocompleteResults"
+                         class="hidden absolute top-full left-0 z-[10000] w-full mt-2 bg-[#1e293b] border border-white/20 rounded-2xl shadow-2xl max-h-96 overflow-y-auto backdrop-blur-xl">
                     </div>
                 </div>
             </div>
 
-            <!-- User Profile Dropdown -->
-            <div class="relative">
-                <button id="profileDropdownButton" class="focus:outline-none">
-                    <img th:if="${users.profilePicture != null}"
-                         th:src="@{'/Images/profilepicture/' + ${users.profilePicture}}"
-                         alt="Profile Picture"
-                         class="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-purple-400 transition duration-300">
-                    <i th:if="${users.profilePicture == null}"
-                       class="fas fa-user text-gray-500 text-xl bg-purple-100 rounded-full p-2 ring-1 ring-purple-400 hover:ring-4 transition duration-300"></i>
-                </button>
-                <div id="profileDropdownMenu" class="absolute right-0 mt-3 w-52 bg-[#363636] rounded-2xl shadow-2xl opacity-0 invisible transition-all duration-300 transform scale-95">
-                    <ul class="text-white py-2">
-                        <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 rounded-xl mx-2">
-                            <a th:href="@{/user/profile}" class="flex items-center space-x-2">👤 Profile Settings</a>
-                        </li>
-                        <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 rounded-xl mx-2">
-                            <a th:if="${not isAdmin}" th:href="@{/user/subscription}" class="flex items-center space-x-2">⭐ Subscriptions</a>
-                            <a th:if="${isAdmin}" href="/admin/home" class="flex items-center space-x-2">💻 Admin Dashboard</a>
-                        </li>
-                        <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-red-100/20 hover:to-pink-100/20 rounded-xl mx-2">
-                            <a href="/logout" class="text-red-300 flex items-center space-x-2">🚪 Logout</a>
-                        </li>
-                        <li class="px-6 py-3 hover:bg-gradient-to-r hover:from-purple-100/20 hover:to-blue-100/20 rounded-xl mx-2">
-                            <a href="#" class="flex items-center space-x-2">ℹ️ About</a>
-                        </li>
-                    </ul>
+            <!-- Navigation Links - Desktop -->
+            <div class="hidden md:flex items-center space-x-2">
+
+                <!-- Home -->
+                <a th:href="@{/user/home}"
+                   class="px-4 py-2 text-white font-medium rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2">
+                    <span>🏠</span>
+                    <span>Home</span>
+                </a>
+
+                <!-- My Library -->
+                <a th:href="@{/user/library}"
+                   class="px-4 py-2 text-white font-medium rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2">
+                    <span>📚</span>
+                    <span>Library</span>
+                </a>
+
+                <!-- Categories Dropdown -->
+                <div class="relative">
+                    <button id="categoriesDropdownButton"
+                            class="flex items-center space-x-2 px-4 py-2 text-white font-medium rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300">
+                        <span>🎯</span>
+                        <span>Categories</span>
+                        <span class="text-xs">▼</span>
+                    </button>
+
+                    <div id="categoriesDropdown"
+                         class="absolute left-0 mt-2 w-80 bg-[#1e293b] border border-white/20 rounded-2xl shadow-2xl hidden backdrop-blur-xl overflow-hidden">
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                                    Browse Categories
+                                </h3>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto custom-scrollbar" th:each="category : ${category}">
+                                <a th:href="@{'/category/books/' + ${category.id}}"
+                                   class="px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-purple-500/20 rounded-lg transition-all duration-300 border border-transparent hover:border-purple-500/30">
+                                    <span th:text="${category.categoryName}"></span>
+                                </a>
+                            </div>
+                            <a href="/categories"
+                               class="block mt-4 text-center text-purple-400 hover:text-purple-300 text-sm font-medium py-2 border-t border-white/10 pt-3">
+                                View all categories →
+                            </a>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Notifications (New Feature) -->
+                <button class="relative px-3 py-2 text-white rounded-lg hover:bg-white/10 transition-all duration-300">
+                    <span class="text-xl">🔔</span>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                </button>
+
+                <!-- User Profile Dropdown -->
+                <div class="relative ml-2">
+                    <button id="profileDropdownButton"
+                            class="flex items-center space-x-2 focus:outline-none group">
+                        <div class="relative">
+                            <img th:if="${users.profilePicture != null}"
+                                 th:src="@{'/Images/profilepicture/' + ${users.profilePicture}}"
+                                 alt="Profile Picture"
+                                 class="w-10 h-10 rounded-full object-cover ring-2 ring-purple-400/50 group-hover:ring-purple-400 transition-all duration-300">
+                            <div th:if="${users.profilePicture == null}"
+                                 class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center ring-2 ring-purple-400/50 group-hover:ring-purple-400 transition-all duration-300">
+                                <span class="text-white font-bold text-lg">👤</span>
+                            </div>
+                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0f172a]"></div>
+                        </div>
+                    </button>
+
+                    <div id="profileDropdownMenu"
+                         class="absolute right-0 mt-3 w-64 bg-[#1e293b] border border-white/20 rounded-2xl shadow-2xl opacity-0 invisible transition-all duration-300 transform scale-95 backdrop-blur-xl overflow-hidden">
+
+                        <!-- Profile Header -->
+                        <div class="px-5 py-4 border-b border-white/10 bg-gradient-to-r from-purple-500/10 to-blue-500/10">
+                            <p class="text-white font-semibold text-sm" th:text="${users.name}">Username</p>
+                            <p class="text-gray-400 text-xs mt-1" th:text="${users.email}">email@example.com</p>
+                        </div>
+
+                        <!-- Menu Items -->
+                        <ul class="py-2">
+                            <li>
+                                <a th:href="@{/user/profile}"
+                                   class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300">
+                                    <span class="text-lg">👤</span>
+                                    <span class="font-medium">Profile Settings</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a th:if="${not isAdmin}"
+                                   th:href="@{/user/subscription}"
+                                   class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300">
+                                    <span class="text-lg">⭐</span>
+                                    <span class="font-medium">Subscriptions</span>
+                                </a>
+                                <a th:if="${isAdmin}"
+                                   href="/admin/home"
+                                   class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-purple-500/20 transition-all duration-300">
+                                    <span class="text-lg">💻</span>
+                                    <span class="font-medium">Admin Dashboard</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300">
+                                    <span class="text-lg">🎵</span>
+                                    <span class="font-medium">Listening History</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a th:href="@{/user/favorites}"
+                                   class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300">
+                                    <span class="text-lg">❤️</span>
+                                    <span class="font-medium">Favorites</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300">
+                                    <span class="text-lg">⚙️</span>
+                                    <span class="font-medium">Settings</span>
+                                </a>
+                            </li>
+                            <li class="border-t border-white/10 mt-2 pt-2">
+                                <a href="#"
+                                   class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300">
+                                    <span class="text-lg">ℹ️</span>
+                                    <span class="font-medium">About</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/logout"
+                                   class="flex items-center space-x-3 px-5 py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-300">
+                                    <span class="text-lg">🚪</span>
+                                    <span class="font-medium">Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
 
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuButton" class="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-all duration-300">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="lg:hidden mt-3">
+            <div class="relative">
+                <input type="text"
+                       id="mobileSearchInput"
+                       placeholder="Search..."
+                       class="w-full py-2.5 pl-10 pr-4 rounded-full bg-white/10 backdrop-blur-md text-white placeholder-gray-400 border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                       autocomplete="off">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Mobile Menu (Hidden by default) -->
+    <div id="mobileMenu" class="hidden md:hidden bg-[#1e293b] border-t border-white/10">
+        <div class="px-4 py-3 space-y-2">
+            <a th:href="@{/user/home}" class="block px-4 py-2.5 text-white rounded-lg hover:bg-white/10 transition-all duration-300">
+                🏠 Home
+            </a>
+            <a th:href="@{/user/library}" class="block px-4 py-2.5 text-white rounded-lg hover:bg-white/10 transition-all duration-300">
+                📚 Library
+            </a>
+            <a href="/categories" class="block px-4 py-2.5 text-white rounded-lg hover:bg-white/10 transition-all duration-300">
+                🎯 Categories
+            </a>
+            <a th:href="@{/user/profile}" class="block px-4 py-2.5 text-white rounded-lg hover:bg-white/10 transition-all duration-300">
+                👤 Profile
+            </a>
+            <a href="/logout" class="block px-4 py-2.5 text-red-400 rounded-lg hover:bg-red-500/10 transition-all duration-300">
+                🚪 Logout
+            </a>
         </div>
     </div>
 </nav>
+
+<style>
+    /* Custom Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(168, 85, 247, 0.5);
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(168, 85, 247, 0.7);
+    }
+
+    /* Dropdown Animation */
+    #profileDropdownMenu.show,
+    #categoriesDropdown.show {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: scale(1) !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Profile Dropdown
+        const profileButton = document.getElementById('profileDropdownButton');
+        const profileMenu = document.getElementById('profileDropdownMenu');
+
+        if (profileButton && profileMenu) {
+            profileButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                profileMenu.classList.toggle('show');
+            });
+        }
+
+        // Categories Dropdown
+        const categoriesButton = document.getElementById('categoriesDropdownButton');
+        const categoriesDropdown = document.getElementById('categoriesDropdown');
+
+        if (categoriesButton && categoriesDropdown) {
+            categoriesButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                categoriesDropdown.classList.toggle('hidden');
+            });
+        }
+
+        // Mobile Menu
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (profileMenu && !profileButton.contains(e.target) && !profileMenu.contains(e.target)) {
+                profileMenu.classList.remove('show');
+            }
+            if (categoriesDropdown && !categoriesButton.contains(e.target) && !categoriesDropdown.contains(e.target)) {
+                categoriesDropdown.classList.add('hidden');
+            }
+        });
+    });
+</script>

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -66,6 +67,8 @@ public class BooksController {
         Books book = booksService.findBookById(audiobookId);
         List<Chapter> chapter = chapterService.findChapterById(audiobookId);
         List<Categories> categories = booksService.getCategoriesById(audiobookId);
+        List<Categories> category = booksService.getCategory();
+
         boolean isAdmin = securityUtils.isAdmin();
         List<ReviewDto> reviews = reviewsService.getReviews(audiobookId);
 
@@ -83,6 +86,7 @@ public class BooksController {
         model.addAttribute("users", user1);
         model.addAttribute("chapters", chapter);
         model.addAttribute("categories", categories);
+        model.addAttribute("category", category);
         model.addAttribute("reviews", reviews);
         model.addAttribute("avgReviewCount",avgReviewCount);
 
@@ -90,29 +94,29 @@ public class BooksController {
     }
 
 
-    @GetMapping("/book/viewchapter/{id}")
-    public String viewChapter(@PathVariable("id") String id, Model model) {
-        String userName = SecurityUtils.getUserEmail();
-        Users user1 = usersService.getUser(userName);
-        System.out.println("the Chapter id is : " + id);
-        Chapter chapter = chapterService.findChapterByChapterId(id);
-        System.out.println("The chapter is : " + chapter);
-
-        Books book = chapter.getBooks();
-        List<Chapter> chapters = chapterService.findChapterById(book.getAudiobookId());
-        System.out.println("All the chapters are : " + chapters);
-        boolean isAdmin = securityUtils.isAdmin();
-        model.addAttribute("isAdmin", isAdmin);
-
-        model.addAttribute("currentPlayingChapterId", id);
-        model.addAttribute("book", book);
-        model.addAttribute("users", user1);
-        model.addAttribute("chapter", chapter);
-        model.addAttribute("chapters", chapters);
-
-
-        return "books/chapter";
-    }
+//    @GetMapping("/book/viewchapter/{id}")
+//    public String viewChapter(@PathVariable("id") String id, Model model) {
+//        String userName = SecurityUtils.getUserEmail();
+//        Users user1 = usersService.getUser(userName);
+//        System.out.println("the Chapter id is : " + id);
+//        Chapter chapter = chapterService.findChapterByChapterId(id);
+//        System.out.println("The chapter is : " + chapter);
+//
+//        Books book = chapter.getBooks();
+//        List<Chapter> chapters = chapterService.findChapterById(book.getAudiobookId());
+//        System.out.println("All the chapters are : " + chapters);
+//        boolean isAdmin = securityUtils.isAdmin();
+//        model.addAttribute("isAdmin", isAdmin);
+//
+//        model.addAttribute("currentPlayingChapterId", id);
+//        model.addAttribute("book", book);
+//        model.addAttribute("users", user1);
+//        model.addAttribute("chapter", chapter);
+//        model.addAttribute("chapters", chapters);
+//
+//
+//        return "books/chapter";
+//    }
 
     @GetMapping("category/books/{id}")
     public String booksInsideCategory(@PathVariable String id, Model model) {
@@ -193,14 +197,76 @@ public class BooksController {
         Users user1 = usersService.getUser(userName);
         List<SavedBooks> savedBooks = booksService.getSavedBooksByUserId(user1.getUserId());
         boolean isAdmin = securityUtils.isAdmin();
-        List<Categories> categories = categoryService.categoriesList();
-        model.addAttribute("categories", categories);
+        List<Categories> category = categoryService.categoriesList();
+        model.addAttribute("category", category);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("books",savedBooks);
         model.addAttribute("users", user1);
         return "books/mylibrary";
     }
 
+    @PostMapping("/user/viewbook/addbook")
+    public ResponseEntity<String> addToFavorites(){
+        return ResponseEntity.ok("Successfully Added !!");
+    }
+
+    @GetMapping("/user/viewbook/checkbookfav")
+    public ResponseEntity<Boolean> checkFavOrNot(@RequestParam String userId,
+                                                    @RequestParam String bookId) {
+        try {
+            Boolean isSaved = booksService.checkBookIsFavOrNot(userId, bookId);
+            return ResponseEntity.ok(isSaved);
+        }catch(Exception e){
+            System.out.println(e);
+            ResponseEntity.internalServerError();
+            throw new RuntimeException("Error: " + e);
+        }
+
+    }
+
+
+    @PostMapping("/user/viewbook/addbooktofav")
+    public ResponseEntity<Map<String,String>> addBookToFav(@RequestBody SavedBookDTO savedBookDTO){
+        try{
+            booksService.addBookToFav(savedBookDTO.getUserId(), savedBookDTO.getBookId());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Book added successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Failed to add book: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    @DeleteMapping("/user/viewbook/removebook")
+    public ResponseEntity<String> removeBookFromFav(@RequestBody SavedBookDTO savedBookDTO){
+        try {
+            booksService.removeBookFromFav(savedBookDTO.getUserId(), savedBookDTO.getBookId());
+            return ResponseEntity.ok("Successfully Deleted");
+        }catch (Exception e){
+            throw new RuntimeException("Failed to delete");
+        }
+    }
+
+    @GetMapping("/user/favorites")
+    public String getFavoritesBooks(Model model){
+        try{
+
+            String userName = SecurityUtils.getUserEmail();
+            Users user1 = usersService.getUser(userName);
+            List<Favourites> favBooks =  booksService.getFavBooksByUserId(user1.getUserId());
+            boolean isAdmin = securityUtils.isAdmin();
+            List<Categories> category = categoryService.categoriesList();
+            model.addAttribute("category", category);
+            model.addAttribute("isAdmin", isAdmin);
+            model.addAttribute("books",favBooks);
+            model.addAttribute("users", user1);
+            return "user/favorites";
+        } catch (Exception e){
+            throw new RuntimeException("Error!! : "+ e);
+        }
+    }
 
 
 

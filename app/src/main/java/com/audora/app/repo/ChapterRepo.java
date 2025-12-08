@@ -10,4 +10,9 @@ public interface ChapterRepo extends JpaRepository<Chapter, String> {
 
     @Query(value = "SELECT * FROM chapter WHERE audiobook_id = :id", nativeQuery = true)
     List<Chapter> findByIdAudioBookId(String id);
+
+    Long countByBooks_audiobookId(String bookId);
+
+
+    List<Chapter> findByBooks_audiobookIdOrderByChapterNumberAsc(String bookId);
 }

@@ -94,14 +94,13 @@ public class AdminController {
     @GetMapping("/addbook")
     public String addBook(Model model,RedirectAttributes redirectAttributes){
         model.addAttribute("book",new BooksDTO());
-        List<Categories> categories = categoryService.categoriesList();
+        List<Categories> category = categoryService.categoriesList();
         String userName = SecurityUtils.getUserEmail();
         Users user1 = usersService.getUser(userName);
         boolean isAdmin = securityUtils.isAdmin();
         model.addAttribute("isAdmin",isAdmin);
         model.addAttribute("users",user1);
-        System.out.println("The categories list are : " + categories);
-        model.addAttribute("categories",categories);
+        model.addAttribute("category",category);
         model.addAttribute("chapter",new Chapter());
 
         return "admin/addbooks";
@@ -186,9 +185,9 @@ public class AdminController {
         Books books = booksService.findBookById(id);
         BooksDTO bookDto = booksService.bookUpdateDTO(books);
         System.out.println("The chapters are : " + bookDto.getChapters());
-        List<Categories> categories = books.getCategoriesList();
+        List<Categories> category = books.getCategoriesList();
 
-        model.addAttribute("categories",categories);
+        model.addAttribute("category",category);
         model.addAttribute("users",user1);
         model.addAttribute("isAdmin",isAdmin);
         model.addAttribute("book",bookDto);

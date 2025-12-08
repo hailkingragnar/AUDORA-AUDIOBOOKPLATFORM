@@ -16,8 +16,8 @@ public class AuthorService {
     private final AuthorsRepo authorsRepo;
 
     @Autowired
-    public AuthorService(AuthorsRepo authorsRepo){
-        this.authorsRepo=authorsRepo;
+    public AuthorService(AuthorsRepo authorsRepo) {
+        this.authorsRepo = authorsRepo;
     }
 
     @Transactional
@@ -29,12 +29,12 @@ public class AuthorService {
 
         try {
             Authors author = new Authors();
-                author.setBio(authorDTO.getBio());
-                    author.setName(authorDTO.getName());
-                    author.setPenName(authorDTO.getPenName());
-                   author.setImage(fileName);
-                   author.setEmail(authorDTO.getEmail());
-                   
+            author.setBio(authorDTO.getBio());
+            author.setName(authorDTO.getName());
+            author.setPenName(authorDTO.getPenName());
+            author.setImage(fileName);
+            author.setEmail(authorDTO.getEmail());
+
             authorsRepo.save(author);
             return true;
         } catch (DataIntegrityViolationException e) {
@@ -46,7 +46,12 @@ public class AuthorService {
         }
     }
 
-    public List<Authors> getAuthors(){
-      return  authorsRepo.findAll();
+    public List<Authors> getAuthors() {
+        return authorsRepo.findAll();
+    }
+
+    public Authors getAuthorsById(String id) {
+        return authorsRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Author not found with ID: " + id));
     }
 }

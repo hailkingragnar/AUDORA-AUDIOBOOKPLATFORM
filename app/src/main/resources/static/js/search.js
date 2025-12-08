@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.addEventListener('click', function (e) {
-        if (!searchInput.contains(e.target)) {
-            autocompleteResults.classList.add('hidden');
-        }
-    });
+   document.addEventListener('click', function (e) {
+       if (!e.target.closest("#searchInput") && !e.target.closest("#autocompleteResults")) {
+           autocompleteResults.classList.add('hidden');
+       }
+   });
 
     async function fetchAutocompleteResults(query) {
         try {

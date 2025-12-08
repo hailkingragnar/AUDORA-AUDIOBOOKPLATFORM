@@ -1,73 +1,280 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: head('Home')}"></head>
-<body>
+<body class="text-white"
+      style="background: linear-gradient(to bottom, #0f172a, #1e293b 40%, #0f172a 100%);">
 
 <th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
 
-<!-- Popular Audiobooks Section -->
-<section class="pt-28 pb-4 reveal" id="popular-books">
-    <div class="mb-4 px-4">
-        <h3 class="text-lg font-bold text-white mb-4 icon-bounce drop-shadow-lg section-highlight">📚 Popular Audiobooks</h3>
+<!-- Main Container -->
+<div class="pt-20 pb-8">
+
+
+    <!-- Continue Listening Section Wrapper -->
+    <div id="continueListeningSection"  class="hidden pt-8 py-6 px-6">
+
+        <h3 class="text-2xl font-bold text-white pb-6">
+                    <span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                        ▶️ Continue Watching
+                    </span>
+        </h3>
+
+        <div id="continueListeningContainer" class="flex overflow-x-auto pb-4 hide-scrollbar scroll-smooth space-x-4 px-4"></div>
     </div>
 
-    <div class="relative">
-        <!-- Scrollable container for Popular Books -->
-        <div class="scroll-section flex overflow-x-auto pb-4 hide-scrollbar scroll-smooth space-x-4 px-4">
-            <div th:each="book : ${books}" class="reveal flex-shrink-0 w-44 enhanced-card rounded-xl overflow-hidden shadow-lg card-hover sparkle">
-                <a th:href="@{'/user/viewbook/' + ${book.audiobookId}}">
-                    <img th:src="@{'/Images/Books/' + ${book.image}}" alt="Book Cover" class="w-full h-40 object-cover hover:scale-105 transition-transform duration-300">
-                </a>
+    <div id="emptyContinueListening" class="text-gray-400 text-sm hidden">No books to continue listening.</div>
+
+    <template id="continueListeningCardTemplate">
+        <div class="flex-shrink-0 w-32 relative group cursor-pointer">
+            <!-- Book Cover -->
+            <img class="book-image w-full h-40 object-cover rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-110"
+                 src="" alt="Book Cover">
+
+            <!-- Hover Overlay -->
+            <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex flex-col justify-end p-2">
+                <p class="text-white text-xs font-semibold line-clamp-2 book-title">Book Title</p>
+                <p class="text-gray-300 text-[10px] line-clamp-1 book-author">Author</p>
+                <p class="text-green-400 text-[10px] progress-text mt-1">42% complete</p>
+                <p class="text-gray-400 text-[9px] chapter-title mt-1">Chapter 1</p>
             </div>
         </div>
-    </div>
-</section>
+    </template>
 
-<!-- Authors Section -->
-<section class="py-8 reveal">
-    <div class="mb-4 px-4">
-        <h3 class="text-lg font-bold text-white mb-4 icon-bounce drop-shadow-lg section-highlight">✍️ Popular Authors</h3>
-    </div>
+    <script>
+        async function loadContinueListening() {
+            try {
+                const response = await fetch('/api/user/continue-listening?limit=8');
+                const items = await response.json();
 
-    <div class="relative">
-        <!-- Scrollable container for Authors -->
-        <div class="scroll-section flex overflow-x-auto pb-4 hide-scrollbar scroll-smooth px-4">
-            <div th:each="author : ${authors}"
-                 class="flex flex-col items-center flex-shrink-0 w-40 mx-2">  <!-- mx-3 for horizontal margin -->
-                <a th:href="@{'/user/author/' + ${author.id}}" class="group block">
-                    <div class="rounded-full overflow-hidden w-40 h-40 border-2 border-indigo-400
-                       group-hover:border-indigo-300 transition-all duration-300 shadow-lg
-                       mx-auto">  <!-- mx-auto centers the circle -->
-                        <img th:src="@{'/Images/Authors/' + ${author.image}}"
-                             alt="Author Image"
-                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                const section = document.getElementById('continueListeningSection');
+                const container = document.getElementById('continueListeningContainer');
+
+                container.innerHTML = '';
+
+                if (items.length === 0) {
+                    // No items, hide entire section
+                    section.classList.add('hidden');
+                    return;
+                }
+
+                // Show section
+                section.classList.remove('hidden');
+
+                items.forEach(item => {
+                    const card = document.getElementById('continueListeningCardTemplate').content.cloneNode(true);
+
+                    card.querySelector('.book-image').src = `/Images/Books/${item.bookImage}`;
+                    card.querySelector('.book-image').alt = item.bookTitle;
+
+                    card.querySelector('.book-title').textContent = item.bookTitle;
+                    card.querySelector('.book-author').textContent = item.author || 'Unknown Author';
+                    card.querySelector('.progress-text').textContent = `${item.progressPercentage || 0}% complete`;
+                    card.querySelector('.chapter-title').textContent = item.resumeChapterTitle || 'Chapter 1';
+
+                    card.querySelector('div.flex-shrink-0').addEventListener('click', () => {
+                        window.location.href = `/book/viewchapter/${item.resumeChapterId}`;
+                    });
+
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Error loading continue listening:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadContinueListening);
+    </script>
+
+
+    <style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .group:hover .book-image {
+            transform: scale(1.1);
+        }
+
+        .group:hover .group-hover\:opacity-100 {
+            opacity: 1;
+        }
+
+        /* Clamp long text */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+
+
+
+
+    <!-- Popular Audiobooks Section -->
+    <section class="pb-6 reveal" id="popular-books">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-6">
+
+                <h3 class="text-2xl font-bold text-white">
+                    <span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                        📚 Popular Audiobooks
+                    </span>
+                </h3>
+
+                <a href="#all-books" class="text-sm text-purple-300 hover:text-purple-200 transition">
+                    View All →
+                </a>
+            </div>
+
+            <!-- Horizontal Scroll -->
+            <div class="relative -mx-4">
+                <div class="flex overflow-x-auto pb-4 hide-scrollbar scroll-smooth space-x-4 px-4">
+                    <div th:each="book : ${books}"
+                         class="flex-shrink-0 w-40 transform transition-transform duration-300 hover:scale-105">
+                        <a th:href="@{'/user/viewbook/' + ${book.audiobookId}}" class="block">
+                            <div class="relative overflow-hidden rounded-lg shadow-xl group">
+                                <img th:src="@{'/Images/Books/' + ${book.image}}"
+                                     alt="Book Cover"
+                                     class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="absolute bottom-2 left-2 right-2">
+                                        <p class="text-white text-xs font-semibold line-clamp-2" th:text="${book.title}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                    <p class="mt-3 text-white text-center text-sm font-medium
-                     group-hover:text-indigo-300 transition-colors duration-300"
-                       th:text="${author.penName}"></p>
-                </a>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Category Sections -->
-<section th:each="category : ${categories}" class=" mb-4 reveal">
-    <div class="mb-4 px-4">
-        <h3 class="text-lg font-bold text-white mb-2 drop-shadow-lg section-highlight" th:text="'📚 ' + ${category.categoryName}"></h3>
-    </div>
+    <!-- All Books Grid Section -->
+    <section class="pb-6" id="all-books">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold text-white mb-6">
+                <span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                    🎧 All Audiobooks
+                </span>
+            </h3>
 
-    <div class="relative">
-        <!-- Scrollable container for Category Books -->
-        <div class="scroll-section flex overflow-x-auto pb-4 hide-scrollbar scroll-smooth space-x-4 px-4">
-            <div th:each="book : ${category.books}" class="reveal flex-shrink-0 w-44 enhanced-card rounded-xl overflow-hidden shadow-lg card-hover sparkle">
-                <a th:href="@{'/user/viewbook/' + ${book.audiobookId}}">
-                    <img th:src="@{'/Images/Books/' + ${book.image}}" alt="Book Cover" class="w-full h-40 object-cover hover:scale-105 transition-transform duration-300">
-                </a>
+            <!-- Books Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                <div th:each="book : ${books}"
+                     class="transform transition-transform duration-300 hover:scale-105">
+
+                    <div class="relative overflow-hidden rounded-lg shadow-lg group">
+                        <!-- Book Image -->
+                        <img th:src="@{'/Images/Books/' + ${book.image}}"
+                             alt="Book Cover"
+                             class="w-full h-60 object-cover">
+
+                        <!-- Overlay with Book Info -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-100 transition-opacity flex flex-col justify-end p-4">
+                            <h3 th:text="${book.title}"
+                                class="text-white font-semibold text-sm md:text-base line-clamp-2 mb-1"></h3>
+
+                            <div class="flex items-center text-xs text-gray-300 mb-3">
+                                ⏱ <span class="ml-1" th:text="${book.duration}"></span>
+                            </div>
+
+                            <!-- Play Button -->
+                            <a th:href="@{/audiobooks/{id}/play(id=${book.audiobookId})}"
+                               class="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-2 rounded-lg text-xs font-semibold hover:from-purple-700 hover:to-blue-700 transition">
+                                <span th:if="${progressMap != null and progressMap.containsKey(book.audiobookId) and progressMap.get(book.audiobookId).currentTime > 0}">
+                                    Continue
+                                </span>
+                                <span th:unless="${progressMap != null and progressMap.containsKey(book.audiobookId) and progressMap.get(book.audiobookId).currentTime > 0}">
+                                    Play
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+
+    <!-- Authors Section -->
+    <section class="py-6 reveal bg-white/5">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-white">
+                    <span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                        ✍️ Popular Authors
+                    </span>
+                </h3>
+            </div>
+
+            <!-- Horizontal Scroll -->
+            <div class="relative -mx-4">
+                <div class="flex overflow-x-auto pb-4 hide-scrollbar scroll-smooth space-x-6 px-4">
+                    <div th:each="author : ${authors}"
+                         class="flex flex-col items-center flex-shrink-0 w-32 transform transition-transform duration-300 hover:scale-105">
+                        <a th:href="@{'/authordetails/' + ${author.id}}" class="group">
+                            <div class="rounded-full overflow-hidden w-32 h-32 border-4 border-purple-400/50
+                                   group-hover:border-purple-400 transition-all duration-300 shadow-xl mb-3">
+                                <img th:src="@{'/Images/Authors/' + ${author.image}}"
+                                     alt="Author Image"
+                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                            </div>
+                            <p class="text-white text-center text-sm font-medium line-clamp-2
+                                 group-hover:text-purple-300 transition-colors duration-300"
+                               th:text="${author.penName}"></p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Sections -->
+    <section th:each="category : ${category}" class="py-8 reveal">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-white">
+                    <span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent"
+                          th:text="'📚 ' + ${category.categoryName}"></span>
+                </h3>
+            </div>
+
+            <!-- Horizontal Scroll -->
+            <div class="relative -mx-4">
+                <div class="flex overflow-x-auto pb-4 hide-scrollbar scroll-smooth space-x-4 px-4">
+                    <div th:each="book : ${category.books}"
+                         class="flex-shrink-0 w-40 transform transition-transform duration-300 hover:scale-105">
+                        <a th:href="@{'/user/viewbook/' + ${book.audiobookId}}" class="block">
+                            <div class="relative overflow-hidden rounded-lg shadow-xl group">
+                                <img th:src="@{'/Images/Books/' + ${book.image}}"
+                                     alt="Book Cover"
+                                     class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="absolute bottom-2 left-2 right-2">
+                                        <p class="text-white text-xs font-semibold line-clamp-2" th:text="${book.title}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
 
 <th:block th:replace="~{fragments/footer :: footer}"></th:block>
 <th:block th:replace="~{fragments/scripts :: scripts}"></th:block>

@@ -1,178 +1,692 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Audiobook Player')}">
-
+<head th:replace="~{fragments/head :: head('Now Playing')}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 </head>
-<body class="bg-gray-900">
+
+<body class="bg-gray-900 text-white">
 
 <th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
 
-<!-- Dynamic Background Cover -->
-<div id="cover-background" class="h-96 w-full relative bg-gradient-to-b from-blue-900 to-gray-900">
-    <div class="container mx-auto max-w-6xl h-full relative z-10">
-        <div class="flex flex-col md:flex-row gap-8 h-full items-start pt-20 pb-12 px-4">
-            <!-- Book Cover (Square) with corrected positioning -->
-            <div class="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 flex-shrink-0 shadow-2xl mt-8">
-                <div class="relative group h-full">
+<div class="relative w-full min-h-screen pt-20 px-4 sm:px-8 pb-32"
+     style="background: linear-gradient(to bottom, #0f172a, #1e293b 50%, #0f172a 100%);">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+
+        <!-- Back to Book Button -->
+        <div class="mb-6">
+            <a th:href="@{'/book/' + ${book.audiobookId}}"
+               class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Book</span>
+            </a>
+        </div>
+
+        <!-- Main Glass Player Card -->
+        <div class="backdrop-blur-xl bg-white/5 rounded-3xl shadow-2xl border border-white/10 p-6 sm:p-10 mb-8">
+
+            <!-- TOP PLAYER AREA -->
+            <div class="flex flex-col lg:flex-row gap-8 items-center">
+
+                <!-- COVER IMAGE -->
+                <div class="w-full lg:w-auto flex justify-center">
                     <img th:src="@{'/Images/Books/'+${book.image}}"
-                         alt="Book Cover"
-                         class="w-full h-full object-contain aspect-[3/4]"
-                         loading="lazy" decoding="async">
-                    <!-- Hover Play Button -->
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button id="cover-play-button" class="w-16 h-16 bg-blue-600 bg-opacity-90 rounded-full flex items-center justify-center hover:bg-blue-700 transform transition-transform hover:scale-105">
-                            <i class="fas fa-play text-white text-2xl" id="cover-play-icon"></i>
-                        </button>
+                         th:data-book-image="${book.image}"
+                         id="bookCoverImage"
+                         class="w-56 h-56 sm:w-64 sm:h-64 object-cover rounded-2xl shadow-2xl">
+                </div>
+
+                <!-- INFO + CONTROLS -->
+                <div class="flex-1 w-full">
+
+                    <!-- Chapter Title & Book Info -->
+                    <div class="mb-6">
+                        <h1 th:text="${chapter.title}" id="chapterTitle"
+                            class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Chapter Title</h1>
+                        <p class="text-gray-400 mb-2">
+                            From <span th:text="${book.title}" id="bookTitle"
+                                       class="text-purple-400 font-semibold">Book Title</span>
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            By <span th:text="${book.author}" class="text-gray-400">Author Name</span>
+                        </p>
                     </div>
+
+                    <!-- BIG PLAY BUTTON -->
+                    <button id="mainPlayBtn"
+                            class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500
+                                   text-white py-4 sm:py-5 rounded-2xl font-bold text-lg sm:text-xl shadow-2xl
+                                   transition-all hover:scale-105 flex items-center justify-center gap-4 mb-6">
+                        <i class="fas fa-play text-2xl sm:text-3xl"></i>
+                        <span>Play Episode</span>
+                    </button>
+
+                    <!-- PROGRESS BAR -->
+                    <div class="mb-6">
+                        <div id="progressContainer" class="h-2 sm:h-3 bg-white/10 rounded-full cursor-pointer hover:h-4 transition-all">
+                            <div id="progressBar"
+                                 class="h-full bg-gradient-to-r from-purple-600 to-blue-600 w-0 rounded-full transition-all"></div>
+                        </div>
+                        <div class="flex justify-between text-xs sm:text-sm mt-2 text-gray-400">
+                            <span id="currentTime">0:00</span>
+                            <span id="totalTime" th:text="${chapter.duration}">0:00</span>
+                        </div>
+                    </div>
+
+                    <!-- CHAPTER INFO STATS -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-sm">
+                        <!-- Duration -->
+                        <div class="flex items-center gap-2 text-gray-400 bg-white/5 rounded-lg p-3">
+                            <i class="fas fa-clock text-purple-400"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">Duration</p>
+                                <p th:text="${chapter.duration}" class="text-white font-semibold">45:30</p>
+                            </div>
+                        </div>
+
+                        <!-- Episode Number -->
+                        <div class="flex items-center gap-2 text-gray-400 bg-white/5 rounded-lg p-3">
+                            <i class="fas fa-list-ol text-blue-400"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">Episode</p>
+                                <p class="text-white font-semibold">
+                                    <span id="currentChapterNum">1</span>/<span th:text="${totalChapters}">12</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Progress Percentage -->
+                        <div th:if="${chapterProgress != null && chapterProgress.lastPlayedSecond > 0}"
+                             class="flex items-center gap-2 text-gray-400 bg-white/5 rounded-lg p-3">
+                            <i class="fas fa-chart-line text-green-400"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">Progress</p>
+                                <p id="progressPercent" class="text-white font-semibold">0%</p>
+                            </div>
+                        </div>
+
+                        <!-- Completion Badge -->
+                        <div th:if="${playedChapters.contains(chapter.id)}"
+                             class="flex items-center gap-2 bg-green-500/20 border border-green-500/50 rounded-lg p-3">
+                            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                            <div>
+                                <p class="text-xs text-green-400">Status</p>
+                                <p class="text-green-400 font-bold">Completed</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- Book Info -->
-            <div class="flex-1 text-white pb-8 mt-8">
-                <h1 th:text="${book.title}" class="text-3xl md:text-4xl lg:text-5xl font-bold mb-2"></h1>
-                <p class="text-lg md:text-xl text-gray-300 mb-6">By <span th:text="${book.author}">Author Name</span></p>
+            <!-- BOOK PROGRESS SECTION -->
+            <div class="mt-8 pt-8 border-t border-white/10">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-book text-purple-400"></i>
+                        Book Progress
+                    </h3>
+                    <span class="text-sm text-gray-400">
+                        <span th:text="${bookProgress.completedChapters}">5</span> of
+                        <span th:text="${bookProgress.totalChapters}">12</span> chapters
+                    </span>
+                </div>
 
-                <!-- Meta Info -->
-                <div class="flex flex-wrap gap-4 mb-6">
-                    <div class="flex items-center">
-                        <i class="fas fa-clock mr-2 text-blue-300"></i>
-                        <span th:text="${book.duration}">8h 45m</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-language mr-2 text-blue-300"></i>
-                        <span th:text="${book.language}">English</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-eye mr-2 text-blue-300"></i>
-                        <span>1.2M views</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-star text-yellow-400 mr-2"></i>
-                        <span>4.5</span>
+                <!-- Book Progress Bar -->
+                <div class="mb-3">
+                    <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-green-500 to-blue-500 transition-all duration-500"
+                             th:style="'width: ' + ${bookProgress.progressPercentage} + '%'"></div>
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="flex gap-4">
-                    <button id="main-play-button" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-full font-medium flex items-center">
-                        <i class="fas fa-play mr-2"></i> Play
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-400">
+                        <span th:text="${bookProgress.progressPercentage}" class="text-white font-semibold">42</span>% Complete
+                    </span>
+                    <span th:if="${bookProgress.totalListeningTime}"
+                          class="text-gray-400">
+                        <i class="far fa-clock mr-1"></i>
+                        <span th:text="${bookProgress.totalListeningTime}">2h 30m</span> listened
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CHAPTER QUEUE LIST -->
+        <div class="backdrop-blur-xl bg-white/5 rounded-3xl shadow-2xl border border-white/10 p-6 sm:p-8">
+
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-list text-purple-400"></i>
+                    All Episodes
+                </h2>
+                <span class="text-sm text-gray-400">
+                    <b th:text="${#lists.size(chapters)}">12</b> chapters
+                </span>
+            </div>
+
+            <div class="space-y-2 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
+
+                <div th:each="ch, stat : ${chapters}"
+                     th:id="'chapter-' + ${ch.id}"
+                     th:data-chapter-id="${ch.id}"
+                     th:data-url="@{'/book/viewchapter/' + ${ch.id}}"
+                     class="chapter-item relative flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 sm:py-4 rounded-xl
+                            transition-all cursor-pointer hover:bg-white/10 group"
+                     th:classappend="${ch.id == currentPlayingChapterId} ? 'bg-purple-600/20 border-2 border-purple-500' : 'bg-white/5'">
+
+                    <!-- INDEX / PLAYING ICON -->
+                    <div class="w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center
+                                bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex-shrink-0
+                                group-hover:scale-110 transition-transform">
+                        <span th:if="${ch.id != currentPlayingChapterId}"
+                              th:text="${stat.index + 1}"
+                              class="text-white font-bold text-sm sm:text-base"></span>
+
+                        <i th:if="${ch.id == currentPlayingChapterId}"
+                           class="fas fa-volume-up animate-pulse text-white"></i>
+                    </div>
+
+                    <!-- CHAPTER INFO -->
+                    <div class="flex-1 min-w-0">
+                        <h3 th:text="${ch.title}"
+                            class="text-white font-semibold text-sm sm:text-base truncate mb-1
+                                   group-hover:text-purple-300 transition">
+                            Chapter Title
+                        </h3>
+                        <div class="flex items-center gap-3 text-xs text-gray-400">
+                            <span class="flex items-center gap-1">
+                                <i class="far fa-clock"></i>
+                                <span th:text="${ch.duration}">45:30</span>
+                            </span>
+
+                            <!-- Progress for this chapter -->
+                            <span th:if="${playedChapters.contains(ch.id)}"
+                                  class="flex items-center gap-1 text-green-400">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Completed</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- PLAY BUTTON -->
+                    <button th:data-chapter-url="@{'/book/viewchapter/' + ${ch.id}}"
+                            th:id="'playBtn-' + ${ch.id}"
+                            class="chapter-play-btn w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center
+                                   bg-purple-600/30 hover:bg-purple-600 rounded-full transition-all
+                                   group-hover:scale-110 flex-shrink-0"
+                            onclick="event.stopPropagation();">
+                        <i th:class="${ch.id == currentPlayingChapterId} ? 'fas fa-pause' : 'fas fa-play'"
+                           class="text-white text-sm sm:text-base ml-0.5"></i>
                     </button>
-                    <button class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-full font-medium flex items-center">
-                        <i class="far fa-bookmark mr-2"></i> Save
-                    </button>
-                    <button class="bg-gray-800 hover:bg-gray-700 text-white w-10 h-10 rounded-full flex items-center justify-center">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
+
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- Main Content -->
-<div class="container mx-auto max-w-6xl px-4 pb-32">
-    <!-- Description Section (no card) -->
-    <div class="mb-8 pt-8">
-        <h2 class="text-xl font-bold text-white mb-4">About</h2>
-        <p th:text="${book.description}" class="text-gray-300 leading-relaxed"></p>
-    </div>
-
-    <!-- Divider -->
-    <div class="border-t border-gray-700 my-8"></div>
-
-    <!-- Episodes List -->
-    <div class="mb-12">
-        <h2 class="text-2xl font-bold text-white mb-6">Episodes</h2>
-        <div class="space-y-3">
-            <div th:each="chapter : ${chapters}" class="bg-gray-800 hover:bg-gray-700 rounded-lg transition-all duration-200">
-                <a th:href="@{'/book/viewchapter/' + ${chapter.id}}" class="episode-card block" data-chapter-id="${chapter.id}">
-                    <div class="flex items-center p-4">
-                        <div class="w-10 h-10 flex-shrink-0 bg-gray-700 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-gray-400" th:text="${chapterStat.count}">1</span>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 th:text="${chapter.title}" class="font-medium text-white truncate"></h3>
-                            <p class="text-sm text-gray-400" th:text="${chapter.duration}">45:30</p>
-                        </div>
-                        <button class="w-10 h-10 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center ml-4 episode-button">
-                            <i class="fas"
-                               th:class="${chapter.id == currentPlayingChapterId} ? 'fa-pause text-blue-400' : 'fa-play text-white'"></i>
-                        </button>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Divider -->
-    <div class="border-t border-gray-700 my-8"></div>
-
-    <!-- More Like This -->
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold text-white mb-6">More Like This</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <div class="bg-gray-800 hover:bg-gray-700 rounded-lg overflow-hidden transition-all duration-200">
-                <img src="#"
-                     alt="Book Cover"
-                     class="w-full aspect-square object-cover">
-                <div class="p-3">
-                    <h3 class="font-medium text-white text-sm mb-1">Book Title</h3>
-                    <p class="text-xs text-gray-400">Author Name</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Audio Player -->
-<audio id="audio-element">
-    <source th:src="@{chapter.audioFileKey}" type="audio/mpeg">
+<!-- ================= AUDIO PLAYER ================= -->
+<audio id="audioPlayer"
+       th:data-resume="${chapterProgress?.lastPlayedSecond}"
+       th:data-chapter-id="${chapter.id}"
+       th:data-chapter-duration="${chapter.duration}"
+       preload="metadata">
+    <source th:src="${chapter.audioFileKey}" type="audio/mpeg">
 </audio>
 
-<!-- Bottom Player (initially hidden) -->
-<div class="bottom-player hidden" id="bottom-player">
-    <div class="player-progress">
-        <div id="progress-bar" class="player-progress-bar"></div>
+<!-- ================= BOTTOM PERSISTENT PLAYER ================= -->
+<div id="bottomPlayer" class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900
+                               border-t border-white/20 shadow-2xl z-50 backdrop-blur-xl
+                               transform translate-y-full transition-transform duration-300">
+
+    <!-- Progress Bar -->
+    <div id="bottomProgressContainer" class="h-1 bg-white/10 cursor-pointer hover:h-2 transition-all relative group">
+        <div id="bottomProgressBar" class="h-full bg-gradient-to-r from-purple-600 to-blue-600 w-0 transition-all"></div>
+        <!-- Hover tooltip -->
+        <div id="progressTooltip" class="absolute bottom-2 hidden group-hover:block bg-gray-800 px-2 py-1 rounded text-xs text-white pointer-events-none"></div>
     </div>
-    <div class="flex items-center w-full px-4 py-2">
-        <img id="player-book-cover" th:src="@{'/Images/Books/'+${book.image}}"
-             alt="Book Cover"
-             class="w-12 h-12 object-cover rounded mr-3">
-        <div class="flex-1 min-w-0">
-            <h3 id="player-book-title" th:text="${book.title}" class="font-medium text-gray-900 truncate"></h3>
-            <p id="player-episode-title" class="text-xs text-gray-600 truncate">Chapter 1: The Silent Patient</p>
+
+    <div class="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3">
+
+        <!-- Left: Book Info -->
+        <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+            <img id="bottomBookCover" src="" alt="Book Cover"
+                 class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover shadow-lg flex-shrink-0">
+            <div class="min-w-0 flex-1">
+                <h3 id="bottomChapterTitle" class="text-white font-semibold text-xs sm:text-sm truncate">Chapter Title</h3>
+                <p id="bottomBookTitle" class="text-gray-400 text-[10px] sm:text-xs truncate">Book Title</p>
+            </div>
         </div>
-        <div class="flex items-center space-x-4 mx-4">
-            <button id="rewind-10" class="text-gray-700 hover:text-blue-600">
-                <i class="fas fa-backward"></i> -10
+
+        <!-- Center: Enhanced Controls -->
+        <div class="flex items-center gap-2 sm:gap-3 mx-3 sm:mx-6">
+            <!-- Previous Chapter -->
+            <button id="bottomPrevBtn"
+                    class="text-white hover:text-purple-400 transition hidden md:block"
+                    title="Previous Chapter">
+                <i class="fas fa-step-backward text-base sm:text-lg"></i>
             </button>
-            <button id="play-pause" class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700">
-                <i class="fas fa-pause"></i>
+
+            <!-- Rewind 10s -->
+            <button id="bottomRewind10Btn"
+                    class="text-white hover:text-purple-400 transition flex flex-col items-center"
+                    title="Rewind 10s">
+                <i class="fas fa-rotate-left text-sm sm:text-base"></i>
+                <span class="text-[8px] sm:text-[10px] mt-0.5">10s</span>
             </button>
-            <button id="forward-10" class="text-gray-700 hover:text-blue-600">
-                +10 <i class="fas fa-forward"></i>
+
+            <!-- Play/Pause -->
+            <button id="bottomPlayBtn"
+                    class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-blue-600
+                           text-white rounded-full flex items-center justify-center
+                           hover:scale-110 transition shadow-xl">
+                <i class="fas fa-play text-sm sm:text-base"></i>
+            </button>
+
+            <!-- Forward 30s -->
+            <button id="bottomForward30Btn"
+                    class="text-white hover:text-purple-400 transition flex flex-col items-center"
+                    title="Forward 30s">
+                <i class="fas fa-rotate-right text-sm sm:text-base"></i>
+                <span class="text-[8px] sm:text-[10px] mt-0.5">30s</span>
+            </button>
+
+            <!-- Next Chapter -->
+            <button id="bottomNextBtn"
+                    class="text-white hover:text-purple-400 transition hidden md:block"
+                    title="Next Chapter">
+                <i class="fas fa-step-forward text-base sm:text-lg"></i>
             </button>
         </div>
-        <div class="flex items-center space-x-2 mx-4">
-            <span id="current-time" class="text-sm text-gray-700">0:00</span>
-            <span class="text-sm text-gray-400">/</span>
-            <span id="duration" class="text-sm text-gray-700">12:45</span>
-        </div>
-        <div class="flex items-center ml-4">
-            <button id="volume-button" class="text-gray-700 mr-2">
-                <i class="fas fa-volume-up"></i>
+
+        <!-- Right: Additional Controls -->
+        <div class="flex items-center gap-2 sm:gap-4 flex-1 justify-end">
+            <!-- Time -->
+            <div class="text-[10px] sm:text-xs text-gray-400 hidden lg:flex items-center gap-1">
+                <span id="bottomCurrentTime">0:00</span>
+                <span>/</span>
+                <span id="bottomTotalTime">0:00</span>
+            </div>
+
+            <!-- Volume -->
+            <div class="relative hidden sm:block">
+                <button id="bottomVolumeBtn" class="text-white hover:text-purple-400 transition">
+                    <i class="fas fa-volume-up text-sm sm:text-base" id="bottomVolumeIcon"></i>
+                </button>
+
+                <div id="bottomVolumeSliderContainer"
+                     class="hidden absolute bottom-full mb-2 right-0 bg-gray-800 rounded-xl shadow-2xl border border-white/10 p-3">
+                    <div class="flex flex-col items-center gap-2">
+                        <input type="range" id="bottomVolumeSlider" min="0" max="100" value="100"
+                               class="h-20 sm:h-24 w-2 bg-white/10 rounded appearance-none cursor-pointer"
+                               style="writing-mode: bt-lr; -webkit-appearance: slider-vertical;">
+                        <span id="bottomVolumePercent" class="text-xs text-gray-300">100%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="relative hidden sm:block">
+                <button id="bottomSettingsBtn" class="text-white hover:text-purple-400 transition">
+                    <i class="fas fa-cog text-sm sm:text-base"></i>
+                </button>
+
+                <div id="bottomSettingsMenu"
+                     class="hidden absolute bottom-full mb-2 right-0 bg-gray-800 rounded-xl shadow-2xl border border-white/10 p-4 w-44 sm:w-48">
+                    <h3 class="text-xs font-semibold mb-2 text-gray-300">Playback Speed</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="bottom-speed-btn px-2 py-1 rounded bg-white/5 hover:bg-purple-600 transition text-xs"
+                                data-speed="0.75">0.75x</button>
+                        <button class="bottom-speed-btn px-2 py-1 rounded bg-purple-600 transition text-xs"
+                                data-speed="1">1x</button>
+                        <button class="bottom-speed-btn px-2 py-1 rounded bg-white/5 hover:bg-purple-600 transition text-xs"
+                                data-speed="1.25">1.25x</button>
+                        <button class="bottom-speed-btn px-2 py-1 rounded bg-white/5 hover:bg-purple-600 transition text-xs"
+                                data-speed="1.5">1.5x</button>
+                        <button class="bottom-speed-btn px-2 py-1 rounded bg-white/5 hover:bg-purple-600 transition text-xs"
+                                data-speed="2">2x</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expand -->
+            <button id="expandPlayerBtn"
+                    class="text-white hover:text-purple-400 transition hidden lg:block"
+                    title="Go to chapter page">
+                <i class="fas fa-expand text-sm sm:text-base"></i>
             </button>
-            <input id="volume-control" type="range" min="0" max="1" step="0.1" value="1" class="w-20">
+
+            <!-- Close -->
+            <button id="closePlayerBtn"
+                    class="text-white hover:text-red-400 transition"
+                    title="Stop playback">
+                <i class="fas fa-times text-sm sm:text-base"></i>
+            </button>
         </div>
     </div>
 </div>
 
-<th:block th:replace="~{fragments/footer :: footer}"></th:block>
-<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+<!-- Progress Save Indicator -->
+<div id="progressSaveIndicator"
+     class="fixed top-20 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-xl
+            flex items-center gap-2 opacity-0 pointer-events-none transition-opacity duration-300 z-50">
+    <i class="fas fa-check-circle"></i>
+    <span class="text-sm font-semibold">Progress saved</span>
+</div>
 
+<!-- ================= CUSTOM STYLES ================= -->
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(168, 85, 247, 0.5);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(168, 85, 247, 0.7);
+    }
 
+    #bottomVolumeSlider::-webkit-slider-thumb {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        background: #a855f7;
+        cursor: pointer;
+        border-radius: 50%;
+    }
 
+    #bottomVolumeSlider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        background: #a855f7;
+        cursor: pointer;
+        border-radius: 50%;
+        border: none;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+</style>
+
+<!-- ================= JAVASCRIPT ================= -->
+<script th:inline="javascript">
+    // ==================== INITIALIZATION ====================
+
+    // Audio Player Elements
+    const audio = document.getElementById("audioPlayer");
+    const mainPlayBtn = document.getElementById("mainPlayBtn");
+    const bottomPlayBtn = document.getElementById("bottomPlayBtn");
+    const progressBar = document.getElementById("progressBar");
+    const bottomProgressBar = document.getElementById("bottomProgressBar");
+    const progressContainer = document.getElementById("progressContainer");
+    const bottomProgressContainer = document.getElementById("bottomProgressContainer");
+    const currentTimeEl = document.getElementById("currentTime");
+    const bottomCurrentTimeEl = document.getElementById("bottomCurrentTime");
+    const totalTimeEl = document.getElementById("totalTime");
+    const bottomTotalTimeEl = document.getElementById("bottomTotalTime");
+    const bottomPlayer = document.getElementById("bottomPlayer");
+    const progressSaveIndicator = document.getElementById("progressSaveIndicator");
+
+    // Data from Thymeleaf
+    const chapterId = [[${chapter.id}]];
+    const chapters = [[${chapters}]];
+    const chapterDuration = [[${chapter.duration}]] || 0;
+    let currentChapterIndex = chapters.findIndex(ch => ch.id === chapterId);
+
+    // Initial progress data
+    const initialProgress = [[${chapterProgress?.lastPlayedSecond}]] || 0;
+    let isChapterCompleted = [[${playedChapters.contains(chapter.id)}]] || false;
+    const totalChapters = [[${totalChapters}]] || chapters.length;
+
+    // Progress tracking variables
+    let progressSaveTimeout;
+    let isUserSeeking = false;
+    let lastSavedSecond = 0;
+    let progressSaveInterval;
+
+    // Update UI with chapter number
+    document.getElementById('currentChapterNum').textContent = currentChapterIndex + 1;
+
+    console.log('Chapter initialized:', {
+        chapterId,
+        initialProgress,
+        isCompleted: isChapterCompleted,
+        duration: chapterDuration
+    });
+
+    // ==================== PROGRESS TRACKING ====================
+
+    /**
+     * Save progress to server
+     */
+    async function saveProgress(second) {
+        // Only save if changed by at least 1 second
+        if (Math.abs(second - lastSavedSecond) < 1) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/chapters/progress?chapterId=${chapterId}&second=${Math.floor(second)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                lastSavedSecond = second;
+                showProgressSaveIndicator();
+                console.log('Progress saved:', second);
+            }
+        } catch (error) {
+            console.error('Error saving progress:', error);
+        }
+    }
+
+    /**
+     * Mark chapter as complete
+     */
+    async function markChapterComplete() {
+        if (isChapterCompleted) return;
+
+        try {
+            const response = await fetch(`/api/chapters/mark-played/${chapterId}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                isChapterCompleted = true;
+                showCompletionNotification();
+                console.log('Chapter marked complete');
+            }
+        } catch (error) {
+            console.error('Error marking chapter complete:', error);
+        }
+    }
+
+    /**
+     * Show progress save indicator
+     */
+    function showProgressSaveIndicator() {
+        progressSaveIndicator.style.opacity = '1';
+        setTimeout(() => {
+            progressSaveIndicator.style.opacity = '0';
+        }, 2000);
+    }
+
+    /**
+     * Show completion notification
+     */
+    function showCompletionNotification() {
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-24 right-4 bg-green-600 text-white px-6 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-3 animate-fade-in';
+        notification.innerHTML = `
+            <i class="fas fa-check-circle text-2xl"></i>
+            <div>
+                <p class="font-semibold">Chapter Completed!</p>
+                <p class="text-sm opacity-90">Progress saved</p>
+            </div>
+        `;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    /**
+     * Show book completion celebration
+     */
+    function showBookCompletionNotification() {
+        const notification = document.createElement('div');
+        notification.className = 'fixed inset-0 bg-black/70 z-[100] flex items-center justify-center backdrop-blur-sm';
+        notification.innerHTML = `
+            <div class="bg-gradient-to-br from-purple-600 to-blue-600 text-white p-8 rounded-3xl shadow-2xl max-w-md text-center transform scale-0 transition-transform duration-300">
+                <i class="fas fa-trophy text-6xl mb-4 animate-bounce"></i>
+                <h2 class="text-3xl font-bold mb-2">Audiobook Complete!</h2>
+                <p class="text-lg mb-6 opacity-90">Congratulations on finishing "${document.getElementById('bookTitle').textContent}"</p>
+                <button onclick="this.closest('.fixed').remove()"
+                        class="bg-white text-purple-600 px-8 py-3 rounded-full font-bold hover:scale-105 transition">
+                    Awesome!
+                </button>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.querySelector('div').style.transform = 'scale(1)';
+        }, 100);
+    }
+
+    /**
+     * Update progress percentage display
+     */
+    function updateProgressDisplay() {
+        if (!chapterDuration || chapterDuration === 0) return;
+
+        const progressPercent = Math.min(100, Math.round((audio.currentTime / chapterDuration) * 100));
+        const progressEl = document.getElementById('progressPercent');
+        if (progressEl) {
+            progressEl.textContent = progressPercent + '%';
+        }
+    }
+
+    // ==================== AUDIO PLAYER CONTROLS ====================
+
+    /**
+     * Resume from last position
+     */
+    if (initialProgress > 0) {
+        audio.currentTime = initialProgress;
+        updateProgressDisplay();
+        console.log('Resumed from:', initialProgress);
+    }
+
+    /**
+     * Sync play/pause buttons
+     */
+    function syncPlayButtons(isPlaying) {
+        const icon = isPlaying ? 'fa-pause' : 'fa-play';
+        const text = isPlaying ? 'Pause Episode' : 'Play Episode';
+        mainPlayBtn.innerHTML = `<i class="fas ${icon} text-2xl sm:text-3xl"></i><span>${text}</span>`;
+        bottomPlayBtn.innerHTML = `<i class="fas ${icon} text-sm sm:text-base"></i>`;
+    }
+
+    /**
+     * Toggle play/pause
+     */
+    function togglePlayPause() {
+        if (audio.paused) {
+            audio.play();
+            syncPlayButtons(true);
+            showBottomPlayer();
+            startProgressTracking();
+        } else {
+            audio.pause();
+            syncPlayButtons(false);
+            stopProgressTracking();
+        }
+        savePlayerState();
+    }
+
+    mainPlayBtn.onclick = togglePlayPause;
+    bottomPlayBtn.onclick = togglePlayPause;
+
+    /**
+     * Start continuous progress tracking
+     */
+   function startProgressTracking() {
+    // Clear any existing interval
+    if (progressSaveInterval) {
+        clearInterval(progressSaveInterval);
+    }
+
+    // Save progress every 3 seconds while playing
+    progressSaveInterval = setInterval(() => {
+        if (!audio.paused && audio.currentTime > 0) {
+            saveProgress(audio.currentTime);       // Save progress to server
+            updateProgressDisplay();               // Update UI progress bar
+            updateBottomProgressBar();
+
+            // Check if chapter completed
+            if (audio.currentTime >= chapterDuration) {
+                markChapterComplete();
+                clearInterval(progressSaveInterval); // Stop tracking after completion
+            }
+        }
+    }, 3000);
+}
+
+    function updateProgressDisplay() {
+    if (!chapterDuration || chapterDuration === 0) return;
+
+    const progressPercent = Math.min(100, Math.round((audio.currentTime / chapterDuration) * 100));
+
+    // Update main progress
+    if (progressBar) progressBar.style.width = progressPercent + '%';
+    const progressEl = document.getElementById('progressPercent');
+    if (progressEl) progressEl.textContent = progressPercent + '%';
+
+    // Update current time
+    if (currentTimeEl) currentTimeEl.textContent = formatTime(audio.currentTime);
+    if (bottomCurrentTimeEl) bottomCurrentTimeEl.textContent = formatTime(audio.currentTime);
+}
+function updateBottomProgressBar() {
+    if (!chapterDuration || chapterDuration === 0) return;
+
+    const progressPercent = Math.min(100, Math.round((audio.currentTime / chapterDuration) * 100));
+    if (bottomProgressBar) bottomProgressBar.style.width = progressPercent + '%';
+}
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return mins + ':' + (secs < 10 ? '0' + secs : secs);
+}
+function showBottomPlayer() {
+    bottomPlayer.classList.remove('translate-y-full');
+    bottomPlayer.classList.add('translate-y-0');
+}
+function stopProgressTracking() {
+    if (progressSaveInterval) {
+        clearInterval(progressSaveInterval);
+    }
+}
+</script>
 </body>
 </html>

@@ -114,9 +114,9 @@ public class UserController {
     @RequestMapping("/")
     public String home(Model model){
         List<Books> books = booksService.getAllBooks();
-        List<Categories> categories = booksService.getCategory();
+        List<Categories> category = booksService.getCategory();
         List<Authors> authors = authorService.getAuthors();
-        model.addAttribute("categories",categories);
+        model.addAttribute("category",category);
         model.addAttribute("books",books);
         model.addAttribute("authors",authors);
         return "index";
@@ -187,14 +187,14 @@ public class UserController {
 
 
         List<Books> books = booksService.getAllBooks();
-        List<Categories> categories = booksService.getCategory();
+        List<Categories> category = booksService.getCategory();
         Users user1 = usersService.getUser(userName);
 
         List<Authors> authors = authorService.getAuthors();
         boolean isAdmin = securityUtils.isAdmin();
 
         System.out.println("From Home page : "+ user1);
-        model.addAttribute("categories",categories);
+        model.addAttribute("category",category);
         model.addAttribute("users",user1);
         model.addAttribute("books",books);
         model.addAttribute("isAdmin",isAdmin);
@@ -213,6 +213,21 @@ public class UserController {
 
 
         return "user/profile";
+    }
+
+    @GetMapping("/authordetails/{id}")
+    public String getAuthorDetails(@PathVariable String id, Model model){
+        Authors author = authorService.getAuthorsById(id);
+        List<Books> books = booksService.findBookByAuthorId(id);
+        String userName = SecurityUtils.getUserEmail();
+        Users user1 = usersService.getUser(userName);
+        boolean isAdmin = securityUtils.isAdmin();
+        model.addAttribute("isAdmin",isAdmin);
+        model.addAttribute("users",user1);
+        model.addAttribute("author",author);
+        model.addAttribute("books",books);
+        return "user/author";
+
     }
 
 

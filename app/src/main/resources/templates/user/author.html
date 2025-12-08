@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${author.name + ' - Author'})}"></head>
+<body class="bg-gray-900 text-white">
+
+<!-- Navbar -->
+<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
+
+<!-- Main Layout -->
+<div class="flex min-h-screen pt-16">
+
+    <!-- Content Area -->
+    <div class="flex-1 overflow-auto">
+
+        <!-- Author Header Section -->
+        <div class="container mx-auto px-4 py-8">
+            <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl p-8">
+                <div class="flex flex-col md:flex-row items-start gap-8">
+
+                    <!-- Author Image -->
+                    <div class="relative flex-shrink-0">
+                        <img th:src="@{'/Images/Authors/' + ${author.image}}"
+                             class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-purple-400/50 shadow-xl">
+                        <div class="absolute bottom-2 right-2 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
+                    </div>
+
+                    <!-- Author Info & Bio Combined -->
+                    <div class="flex-1 space-y-6">
+                        <!-- Name and Stats -->
+                        <div class="space-y-4">
+                            <h1 th:text="${author.name}"
+                                class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent"></h1>
+
+                            <div class="flex flex-wrap gap-3 text-sm">
+                                <div class="flex items-center bg-white/10 px-4 py-2 rounded-full">
+                                    📚 <span class="ml-2" th:text="${author.booksList.size() + ' Books'}"></span>
+                                </div>
+
+                                <div th:if="${author.penName}" class="flex items-center bg-white/10 px-4 py-2 rounded-full">
+                                    ✍ <span class="ml-2" th:text="${author.penName}"></span>
+                                </div>
+
+                                <div th:if="${author.email}" class="flex items-center bg-white/10 px-4 py-2 rounded-full">
+                                    📧 <span class="ml-2" th:text="${author.email}"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Biography -->
+                        <div class="space-y-2">
+                            <h2 class="text-xl font-semibold text-purple-300">About the Author</h2>
+                            <p th:text="${author.bio}" class="text-purple-200/90 leading-relaxed whitespace-pre-line text-sm md:text-base"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Section -->
+        <section class="py-8">
+            <div class="container mx-auto px-4">
+
+                <!-- Section Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">
+                        Books by <span th:text="${author.name}" class="text-purple-300"></span>
+                    </h2>
+                    <span class="text-sm text-purple-200 bg-white/10 px-4 py-2 rounded-full"
+                          th:text="${author.booksList.size() + ' Books'}"></span>
+                </div>
+
+                <!-- Books Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+
+                    <div th:each="book : ${books}"
+                         class="transform transition-transform duration-300 hover:scale-105">
+
+                        <div class="relative overflow-hidden rounded-lg shadow-lg group">
+                            <!-- Book Image -->
+                            <img th:src="@{'/Images/Books/' + ${book.image}}"
+                                 alt="Book Cover"
+                                 class="w-full h-60 object-cover">
+
+                            <!-- Overlay with Book Info -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-100 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                                <h3 th:text="${book.title}"
+                                    class="text-white font-semibold text-sm md:text-base line-clamp-2 mb-1"></h3>
+
+                                <div class="flex items-center text-xs text-gray-300 mb-3">
+                                    ⏱ <span class="ml-1" th:text="${book.duration}"></span>
+                                </div>
+
+                                <!-- Play Button -->
+                                <a th:href="@{/audiobooks/{id}/play(id=${book.audiobookId})}"
+                                   class="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-2 rounded-lg text-xs font-semibold hover:from-purple-700 hover:to-blue-700 transition">
+                                    <span th:if="${progressMap != null and progressMap.containsKey(book.audiobookId) and progressMap.get(book.audiobookId).currentTime > 0}">
+                                        Continue
+                                    </span>
+                                    <span th:unless="${progressMap != null and progressMap.containsKey(book.audiobookId) and progressMap.get(book.audiobookId).currentTime > 0}">
+                                        Play
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/footer :: footer}"></th:block>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+
+</body>
+</html>

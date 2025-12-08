@@ -1,9 +1,7 @@
 package com.audora.app.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,10 +27,16 @@ public class Chapter {
                 '}';
     }
 
-    private String duration; // in seconds
+    @Column(name = "duration_int")
+    private int duration; // in seconds
     private String audioFileKey; // S3 object key
+    private Double lastPlayedSecond; // resume point
+    private Boolean completed;       // played glow
+
+    private Integer chapterNumber;
 
     @ManyToOne
     @JoinColumn(name = "audiobookId")
+    @JsonIgnore   // ✅ STOPS infinite recursion
     private Books books;
 }
