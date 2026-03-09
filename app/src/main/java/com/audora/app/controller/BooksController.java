@@ -252,7 +252,6 @@ public class BooksController {
     @GetMapping("/user/favorites")
     public String getFavoritesBooks(Model model){
         try{
-
             String userName = SecurityUtils.getUserEmail();
             Users user1 = usersService.getUser(userName);
             List<Favourites> favBooks =  booksService.getFavBooksByUserId(user1.getUserId());
